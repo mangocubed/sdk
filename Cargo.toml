@@ -7,3 +7,7 @@ repository = "https://github.com/mangocubed/sdk"
 
 [dependencies]
 dioxus = "0.7.0-rc.0"
+
+[features]
+default = ["fullstack"]
+fullstack = ["dioxus/fullstack"]

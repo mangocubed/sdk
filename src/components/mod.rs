@@ -93,15 +93,14 @@ pub fn NavbarStart(children: Element) -> Element {
 
 #[component]
 pub fn PageTitle(children: Element) -> Element {
-    let app_title = use_server_cached(|| {
-        let app_title = dioxus::cli_config::app_title().unwrap_or("Mango³".to_owned());
+    #[cfg(not(feature = "fullstack"))]
+    let mut app_title = "Mango³".to_owned();
+    #[cfg(feature = "fullstack")]
+    let mut app_title = use_server_cached(|| dioxus::cli_config::app_title().unwrap_or("Mango³".to_owned()));
 
-        if cfg!(debug_assertions) {
-            app_title + " (dev)"
-        } else {
-            app_title
-        }
-    });
+    if cfg!(debug_assertions) {
+        app_title += " (dev)";
+    }
 
     let vnode = children?;
     let page_title = match vnode.template {
