@@ -23,10 +23,12 @@
 }
 
 @source inline("absolute");
-@source inline("bg-base-300");
+@source inline("bg-base-{200,300}");
 @source inline("btn{-block,-circle,-ghost,-primary,-sm,}");
+@source inline("footer{-horizontal,}");
 @source inline("modal{-action,-backdrop,-box,-open,}");
 @source inline("navbar{-end,-start,}");
+@source inline("p-10");
 @source inline("px-3");
 @source inline("right-2");
 @source inline("shadow-md");
