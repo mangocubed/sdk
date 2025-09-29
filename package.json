@@ -9,7 +9,6 @@
         "@tailwindcss/cli": "^4.1.13",
         "@tailwindcss/typography": "^0.5.16",
         "daisyui": "^5.1.23",
-        "tailwindcss": "^4.1.13",
-        "tailwindcss-safe-area": "^1.1.0"
+        "tailwindcss": "^4.1.13"
     }
 }
