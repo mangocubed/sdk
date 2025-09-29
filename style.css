@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tailwindcss-safe-area";
+@plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
