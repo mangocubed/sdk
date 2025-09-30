@@ -8,4 +8,4 @@ runs:
           with:
               node-version: 22
         - shell: bash
-          run: npm ci
+          run: npm install
