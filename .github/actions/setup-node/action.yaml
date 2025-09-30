@@ -9,4 +9,4 @@ runs:
               node-version: 22
               cache: npm
         - shell: bash
-          run: npm ci
+          run: npm install
