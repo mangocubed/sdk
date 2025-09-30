@@ -1,6 +1,8 @@
 use dioxus::core::{DynamicNode, Template, TemplateNode};
 use dioxus::prelude::*;
 
+use crate::icons::Mango3Icon;
+
 #[component]
 pub fn ConfirmationModal(children: Element, is_open: Signal<bool>, on_accept: Callback) -> Element {
     rsx! {
@@ -34,6 +36,21 @@ pub fn ConfirmationModal(children: Element, is_open: Signal<bool>, on_accept: Ca
 pub fn Footer(children: Element) -> Element {
     rsx! {
         footer { class: "footer md:footer-horizontal bg-base-200 p-10", {children} }
+    }
+}
+
+#[component]
+pub fn LoadingOverlay(is_visible: ReadSignal<bool>) -> Element {
+    rsx! {
+        div {
+            class: "loading-overlay",
+            class: if !is_visible() { "loading-overlay-hidden" },
+            figure {
+                div { class: "loading-overlay-pulse" }
+
+                Mango3Icon {}
+            }
+        }
     }
 }
 
