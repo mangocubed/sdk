@@ -1,0 +1,11 @@
+name: Setup Node
+description: Setup Node.js environment
+
+runs:
+    using: composite
+    steps:
+        - uses: actions/setup-node@v5
+          with:
+              node-version: 22
+        - shell: bash
+          run: npm install
