@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Mango3Icon() -> Element {
+pub fn Mango3Icon(#[props(optional)] class: String) -> Element {
     rsx! {
         svg {
+            class,
             fill: "none",
             height: "124",
             view_box: "0 0 124 124",

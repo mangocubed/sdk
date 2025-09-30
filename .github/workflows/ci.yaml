@@ -16,7 +16,7 @@ on:
             - README.md
 
 jobs:
-    analysis:
+    check_rust:
         runs-on: ubuntu-24.04
         steps:
             - uses: actions/checkout@v5
@@ -27,3 +27,11 @@ jobs:
               run: cargo fmt --all --check
             - name: Check with dioxus-cli
               run: dx fmt --check
+
+    check_css:
+        runs-on: ubuntu-24.04
+        steps:
+            - uses: actions/checkout@v5
+            - uses: ./.github/actions/setup-node
+            - name: Build sample CSS
+              run: npx @tailwindcss/cli --minify --input ./style.css --output ./output.css

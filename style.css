@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
@@ -23,62 +24,64 @@
     --radius-field: 1rem;
 }
 
-@source inline("absolute");
-@source inline("bg-base-{200,300}");
-@source inline("btn{-block,-circle,-ghost,-primary,-sm,}");
+/* Sources */
+@source inline("brand");
+@source inline("btn{-primary,}");
 @source inline("footer");
-@source inline("md:footer-horizontal");
-@source inline("modal{-action,-backdrop,-box,-open,}");
+@source inline("loading-overlay");
+@source inline("modal{-action,-backdrop,-box,-close,-open,}");
 @source inline("navbar{-end,-start,}");
-@source inline("p-10");
-@source inline("px-3");
-@source inline("right-2");
-@source inline("shadow-md");
-@source inline("top-2");
+
+/* Utilities */
+@utility brand {
+    @apply flex gap-2 items-center;
+
+    .brand-icon {
+        @apply h-[36px] w-auto sm:hidden;
+    }
+
+    .brand-logo {
+        @apply h-[36px] w-auto max-sm:hidden;
+    }
+
+    .brand-suffix {
+        @apply text-3xl font-bold opacity-80 empty:hidden;
+    }
+
+    .brand-dev {
+        @apply text-sm opacity-70 self-start;
+    }
+}
 
 @utility btn {
     @apply uppercase;
 }
 
-@utility modal-box {
-    @apply bg-[#23232b];
+@utility footer {
+    @apply md:footer-horizontal bg-base-200 p-10;
 }
 
-@layer components {
-    /* Loading overlay */
-    @keyframes loading-overlay-pulse {
-        0% {
-            background-color: #333;
-            box-shadow: 0 0 0 0px #333;
-        }
-        100% {
-            background-color: #3333;
-            box-shadow: 0 0 0 64px #3333;
-        }
-    }
+@utility loading-overlay {
+    @apply flex items-center justify-center fixed inset-[0] z-1000 bg-black;
 
-    .loading-overlay {
-        @apply flex items-center justify-center fixed inset-[0] z-1000 bg-black;
+    transition:
+        visibility 0s 0.3s,
+        background-color 0.3s;
 
-        transition:
-            visibility 0s 0.3s,
-            background-color 0.3s;
-    }
-
-    .loading-overlay .loading-overlay-pulse {
+    .loading-overlay-pulse {
         @apply bottom-[14px] left-[14px] m-auto h-[100px] w-[100px] rounded-full animate-[loading-overlay-pulse_1.5s_infinite];
     }
 
-    .loading-overlay figure {
+    figure {
         @apply block h-[128px] w-[128px] relative;
     }
 
-    .loading-overlay svg {
+    svg {
         @apply block h-auto w-full;
     }
 
-    .loading-overlay svg,
-    .loading-overlay .loading-overlay-pulse {
+    svg,
+    .loading-overlay-pulse {
         @apply absolute;
 
         transition:
@@ -86,12 +89,36 @@
             opacity 0.3s;
     }
 
-    .loading-overlay.loading-overlay-hidden {
+    &.loading-overlay-hidden {
         @apply bg-[#0000] invisible;
     }
 
-    .loading-overlay.loading-overlay-hidden img,
-    .loading-overlay.loading-overlay-hidden .loading-overlay-pulse {
+    &.loading-overlay-hidden svg,
+    &.loading-overlay-hidden .loading-overlay-pulse {
         @apply invisible opacity-0;
+    }
+}
+
+@utility modal-box {
+    @apply bg-[#23232b];
+}
+
+@utility modal-close {
+    @apply btn btn-sm btn-circle btn-ghost absolute right-2 top-2;
+}
+
+@utility navbar {
+    @apply bg-base-300 shadow-md px-3;
+}
+
+/* Keyframes */
+@keyframes loading-overlay-pulse {
+    0% {
+        background-color: #333;
+        box-shadow: 0 0 0 0px #333;
+    }
+    100% {
+        background-color: #3333;
+        box-shadow: 0 0 0 64px #3333;
     }
 }
