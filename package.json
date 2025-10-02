@@ -1,6 +1,6 @@
 {
     "name": "sdk",
-    "version": "0.0.0-alpha.2",
+    "version": "0.0.0-alpha.3",
     "style": "style.css",
     "files": [
         "style.css"
