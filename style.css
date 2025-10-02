@@ -25,12 +25,27 @@
 }
 
 /* Sources */
+@source inline("alert{-error,}");
 @source inline("brand");
-@source inline("btn{-primary,}");
+@source inline("btn{-primary,-ghost,-sm,-submit,}");
+@source inline("fieldset{-legend,}");
 @source inline("footer");
-@source inline("loading-overlay");
+@source inline("form");
+@source inline("h1");
+@source inline("hidden");
+@source inline("input{-error,}");
+@source inline("label");
+@source inline("loader");
+@source inline("loading{-spinner,}");
 @source inline("modal{-action,-backdrop,-box,-close,-open,}");
 @source inline("navbar{-end,-start,}");
+@source inline("pr-0");
+@source inline("py-{2,3}");
+@source inline("select{-error,}");
+@source inline("size-{5,6}");
+@source inline("splash");
+@source inline("text-error");
+@source inline("w-full");
 
 /* Utilities */
 @utility brand {
@@ -57,46 +72,40 @@
     @apply uppercase;
 }
 
+@utility btn-submit {
+    @apply btn btn-block btn-primary;
+}
+
 @utility footer {
     @apply md:footer-horizontal bg-base-200 p-10;
 }
 
-@utility loading-overlay {
-    @apply flex items-center justify-center fixed inset-[0] z-1000 bg-black;
+@utility form {
+    @apply max-w-[640px] ml-auto mr-auto mt-4 mb-4 w-full;
+}
 
-    transition:
-        visibility 0s 0.3s,
-        background-color 0.3s;
+@utility h1 {
+    @apply text-2xl font-bold mb-6;
+}
 
-    .loading-overlay-pulse {
-        @apply bottom-[14px] left-[14px] m-auto h-[100px] w-[100px] rounded-full animate-[loading-overlay-pulse_1.5s_infinite];
+@utility input {
+    @apply border-white w-full;
+
+    @variant focus {
+        outline: none;
     }
 
-    figure {
-        @apply block h-[128px] w-[128px] relative;
+    @variant focus-within {
+        outline: none;
     }
+}
 
-    svg {
-        @apply block h-auto w-full;
-    }
+@utility loader {
+    @apply loading loading-spinner loading-xl fixed bottom-3 right-3;
+}
 
-    svg,
-    .loading-overlay-pulse {
-        @apply absolute;
-
-        transition:
-            visibility 0s 0.3s,
-            opacity 0.3s;
-    }
-
-    &.loading-overlay-hidden {
-        @apply bg-[#0000] invisible;
-    }
-
-    &.loading-overlay-hidden svg,
-    &.loading-overlay-hidden .loading-overlay-pulse {
-        @apply invisible opacity-0;
-    }
+@utility main {
+    @apply max-w-[1300px] w-full mx-auto p-4;
 }
 
 @utility modal-box {
@@ -111,8 +120,62 @@
     @apply bg-base-300 shadow-md px-3;
 }
 
+@utility select {
+    @apply border-white w-full;
+
+    @variant focus {
+        outline: none;
+    }
+}
+
+@utility splash {
+    @apply flex items-center justify-center fixed inset-[0] z-1000 bg-black;
+
+    transition:
+        visibility 0s 0.3s,
+        background-color 0.3s;
+
+    .splash-pulse {
+        @apply bottom-[14px] left-[14px] m-auto h-[100px] w-[100px] rounded-full animate-[splash-pulse_1.5s_infinite];
+    }
+
+    figure {
+        @apply block h-[128px] w-[128px] relative;
+    }
+
+    svg {
+        @apply block h-auto w-full;
+    }
+
+    svg,
+    .splash-pulse {
+        @apply absolute;
+
+        transition:
+            visibility 0s 0.3s,
+            opacity 0.3s;
+    }
+
+    &.splash-hidden {
+        @apply bg-[#0000] invisible;
+    }
+
+    &.splash-hidden svg,
+    &.splash-hidden .splash-pulse {
+        @apply invisible opacity-0;
+    }
+}
+
+@utility textarea {
+    @apply border-white w-full;
+
+    @variant focus {
+        outline: none;
+    }
+}
+
 /* Keyframes */
-@keyframes loading-overlay-pulse {
+@keyframes splash-pulse {
     0% {
         background-color: #333;
         box-shadow: 0 0 0 0px #333;
