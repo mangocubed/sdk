@@ -230,7 +230,7 @@ pub type FormResult = ServerFnResult<FormSuccess, FormError>;
 pub async fn extract_header_value(name: &str) -> ServFnResult<Option<HeaderValue>> {
     let header_value = extract::<HeaderMap, _>()
         .await
-        .map_err(|error| ServFnError::forbidden())?
+        .map_err(|_| ServFnError::forbidden())?
         .get(name.to_lowercase())
         .cloned();
 
