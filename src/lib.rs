@@ -14,14 +14,14 @@ pub mod config;
 pub mod hooks;
 #[cfg(feature = "dioxus")]
 pub mod icons;
-#[cfg(all(feature = "dioxus", feature = "fullstack"))]
+#[cfg(feature = "dioxus-fullstack")]
 pub mod serv_fn;
 
 #[cfg(feature = "dioxus")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
 #[cfg(feature = "server")]
-fn generate_random_string(length: u8) -> String {
+pub fn generate_random_string(length: u8) -> String {
     use rand::distr::Alphanumeric;
     use rand::{Rng, rng};
 

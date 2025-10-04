@@ -1,29 +1,30 @@
 use std::collections::HashMap;
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 use std::fmt::{Display, Formatter};
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
+use server_fn::error::FromServerFnError;
 use validator::ValidationErrors;
 
-#[cfg(any(feature = "web", feature = "desktop", feature = "mobile"))]
+#[cfg(not(feature = "dioxus-server"))]
 use dioxus::fullstack::client::Client;
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 use dioxus::fullstack::mock_client::MockServerFnClient;
-#[cfg(any(feature = "web", feature = "desktop", feature = "mobile"))]
+#[cfg(not(feature = "dioxus-server"))]
 use futures::{Sink, Stream};
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
+use headers::authorization::Bearer;
+#[cfg(feature = "dioxus-server")]
 use http::{HeaderMap, HeaderValue, StatusCode};
-#[cfg(feature = "web")]
+#[cfg(feature = "dioxus-web")]
 use server_fn::client::browser::BrowserClient;
-#[cfg(any(feature = "desktop", feature = "mobile"))]
+#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
 use server_fn::client::reqwest::ReqwestClient;
-#[cfg(any(feature = "web", feature = "desktop", feature = "mobile"))]
-use server_fn::error::FromServerFnError;
-#[cfg(feature = "web")]
+#[cfg(feature = "dioxus-web")]
 use server_fn::request::browser::BrowserRequest;
-#[cfg(feature = "web")]
+#[cfg(feature = "dioxus-web")]
 use server_fn::response::browser::BrowserResponse;
 
 static SERV_FN_HEADERS: GlobalSignal<HashMap<String, String>> = GlobalSignal::new(HashMap::new);
@@ -36,13 +37,13 @@ pub fn set_serv_fn_header(name: &str, value: &str) {
     SERV_FN_HEADERS.write().insert(name.to_owned(), value.to_owned());
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 pub type ServFnClient = MockServerFnClient;
 
-#[cfg(not(feature = "server"))]
+#[cfg(not(feature = "dioxus-server"))]
 pub struct ServFnClient;
 
-#[cfg(feature = "web")]
+#[cfg(feature = "dioxus-web")]
 impl<E, IS, OS> Client<E, IS, OS> for ServFnClient
 where
     E: FromServerFnError,
@@ -81,7 +82,7 @@ where
     }
 }
 
-#[cfg(any(feature = "desktop", feature = "mobile"))]
+#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
 impl<E, IS, OS> Client<E, IS, OS> for ServFnClient
 where
     E: FromServerFnError,
@@ -127,7 +128,7 @@ pub enum ServFnError {
     NotFound,
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl Display for ServFnError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -138,14 +139,14 @@ impl Display for ServFnError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 fn set_serv_fn_status(status: StatusCode) {
     let server_context = dioxus::server::server_context();
 
     *server_context.status_mut() = status;
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl ServFnError {
     pub fn unauthorized() -> Self {
         set_serv_fn_status(StatusCode::UNAUTHORIZED);
@@ -166,7 +167,7 @@ impl ServFnError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl From<ServFnError> for ServerFnError<ServFnError> {
     fn from(value: ServFnError) -> Self {
         ServerFnError::ServerError(value)
@@ -180,7 +181,7 @@ pub struct FormSuccess {
     pub(crate) message: String,
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl FormSuccess {
     pub fn new(message: &str) -> Self {
         Self {
@@ -195,7 +196,7 @@ pub struct FormError {
     pub(crate) validation_errors: Option<ValidationErrors>,
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl FormError {
     pub fn new(message: &str, validation_errors: Option<ValidationErrors>) -> Self {
         set_serv_fn_status(StatusCode::UNPROCESSABLE_ENTITY);
@@ -207,14 +208,14 @@ impl FormError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl From<FormError> for ServerFnError<FormError> {
     fn from(value: FormError) -> Self {
         ServerFnError::ServerError(value)
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
 impl From<ServerFnError<ServFnError>> for FormError {
     fn from(value: ServerFnError<ServFnError>) -> Self {
         Self {
@@ -226,7 +227,22 @@ impl From<ServerFnError<ServFnError>> for FormError {
 
 pub type FormResult = ServerFnResult<FormSuccess, FormError>;
 
-#[cfg(feature = "server")]
+#[cfg(feature = "dioxus-server")]
+async fn extract_authorization_bearer() -> ServFnResult<Option<Bearer>> {
+    use axum_extra::TypedHeader;
+    use headers::Authorization;
+
+    if let Some(TypedHeader(Authorization(bearer))) = extract::<Option<TypedHeader<Authorization<Bearer>>>, _>()
+        .await
+        .map_err(|_| ServFnError::forbidden())?
+    {
+        Ok(Some(bearer))
+    } else {
+        Ok(None)
+    }
+}
+
+#[cfg(feature = "dioxus-server")]
 pub async fn extract_header_value(name: &str) -> ServFnResult<Option<HeaderValue>> {
     let header_value = extract::<HeaderMap, _>()
         .await
