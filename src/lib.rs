@@ -20,6 +20,18 @@ pub mod serv_fn;
 #[cfg(feature = "dioxus")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
+#[cfg(feature = "server")]
+fn generate_random_string(length: u8) -> String {
+    use rand::distr::Alphanumeric;
+    use rand::{Rng, rng};
+
+    rng()
+        .sample_iter(&Alphanumeric)
+        .take(length as usize)
+        .map(char::from)
+        .collect()
+}
+
 #[cfg(feature = "dioxus")]
 pub fn loader_is_active() -> bool {
     LOADER_UNITS.read().values().any(|&loading| loading)
