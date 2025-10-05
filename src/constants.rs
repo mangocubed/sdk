@@ -17,3 +17,5 @@ pub static ERROR_ALREADY_EXISTS: LazyLock<ValidationError> =
 #[cfg(feature = "server")]
 pub static ERROR_IS_INVALID: LazyLock<ValidationError> =
     LazyLock::new(|| ValidationError::new("invalid").with_message(Cow::Borrowed("Is invalid")));
+
+pub const HEADER_APP_TOKEN: &str = "X-App-Token";

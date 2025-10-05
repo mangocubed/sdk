@@ -27,6 +27,8 @@ use server_fn::request::browser::BrowserRequest;
 #[cfg(feature = "dioxus-web")]
 use server_fn::response::browser::BrowserResponse;
 
+use crate::config::HEADER_APP_TOKEN;
+
 static SERV_FN_HEADERS: GlobalSignal<HashMap<String, String>> = GlobalSignal::new(HashMap::new);
 
 pub fn remove_serv_fn_header(name: &str) {
@@ -55,6 +57,8 @@ where
 
     fn send(req: Self::Request) -> impl Future<Output = Result<Self::Response, E>> + Send {
         let headers = req.headers();
+        
+        headers.append(HEADER_APP_TOKEN, env!("APP_TOKEN"));
 
         for (name, value) in SERV_FN_HEADERS() {
             headers.append(&name, &value);
@@ -94,6 +98,8 @@ where
 
     fn send(mut req: Self::Request) -> impl Future<Output = Result<Self::Response, E>> + Send {
         let headers = req.headers_mut();
+        
+        headers.append(HEADER_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
 
         for (name, value) in SERV_FN_HEADERS() {
             headers.append(name, value.parse().unwrap());
@@ -228,7 +234,19 @@ impl From<ServerFnError<ServFnError>> for FormError {
 pub type FormResult = ServerFnResult<FormSuccess, FormError>;
 
 #[cfg(feature = "dioxus-server")]
-async fn extract_authorization_bearer() -> ServFnResult<Option<Bearer>> {
+pub async fn extract_app_token() -> ServFnResult<Option<String>> {
+    let app_token = extract::<HeaderMap, _>()
+        .await
+        .map_err(|_| ServFnError::forbidden())?
+        .get(HEADER_APP_TOKEN)
+        .and_then(|value| value.to_str().ok())
+        .map(|token| token.to_owned());
+
+    Ok(app_token)
+}
+
+#[cfg(feature = "dioxus-server")]
+pub async fn extract_authorization_bearer() -> ServFnResult<Option<Bearer>> {
     use axum_extra::TypedHeader;
     use headers::Authorization;
 
@@ -251,4 +269,19 @@ pub async fn extract_header_value(name: &str) -> ServFnResult<Option<HeaderValue
         .cloned();
 
     Ok(header_value)
+}
+
+#[cfg(feature = "dioxus-server")]
+pub async fn require_app_token() -> ServFnResult<()> {
+    let app_token = extract_app_token().await?;
+    
+    use crate::config::APP_CONFIG;
+
+    if let Some(app_token) = app_token
+        && app_token == APP_CONFIG.token || APP_CONFIG.old_tokens.contains(&app_token.to_owned())
+    {
+        Ok(())
+    } else {
+        Err(ServFnError::forbidden())
+    }
 }
