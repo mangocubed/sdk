@@ -5,7 +5,6 @@ use std::fmt::{Display, Formatter};
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use server_fn::error::FromServerFnError;
 use validator::ValidationErrors;
 
 #[cfg(not(feature = "dioxus-server"))]
@@ -22,12 +21,14 @@ use http::{HeaderMap, HeaderValue, StatusCode};
 use server_fn::client::browser::BrowserClient;
 #[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
 use server_fn::client::reqwest::ReqwestClient;
+#[cfg(not(feature = "dioxus-server"))]
+use server_fn::error::FromServerFnError;
 #[cfg(feature = "dioxus-web")]
 use server_fn::request::browser::BrowserRequest;
 #[cfg(feature = "dioxus-web")]
 use server_fn::response::browser::BrowserResponse;
 
-use crate::config::HEADER_APP_TOKEN;
+use crate::constants::HEADER_APP_TOKEN;
 
 static SERV_FN_HEADERS: GlobalSignal<HashMap<String, String>> = GlobalSignal::new(HashMap::new);
 
@@ -57,8 +58,11 @@ where
 
     fn send(req: Self::Request) -> impl Future<Output = Result<Self::Response, E>> + Send {
         let headers = req.headers();
-        
-        headers.append(HEADER_APP_TOKEN, env!("APP_TOKEN"));
+        let app_token = env!("APP_TOKEN");
+
+        if !app_token.is_empty() {
+            headers.append(HEADER_APP_TOKEN, app_token);
+        }
 
         for (name, value) in SERV_FN_HEADERS() {
             headers.append(&name, &value);
@@ -98,10 +102,15 @@ where
 
     fn send(mut req: Self::Request) -> impl Future<Output = Result<Self::Response, E>> + Send {
         let headers = req.headers_mut();
-        
-        headers.append(HEADER_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
+        let app_token = env!("APP_TOKEN");
+
+        if !app_token.is_empty() {
+            headers.append(HEADER_APP_TOKEN, app_token.parse().unwrap());
+        }
 
         for (name, value) in SERV_FN_HEADERS() {
+            let name: &'static str = Box::leak(name.into_boxed_str());
+
             headers.append(name, value.parse().unwrap());
         }
 
@@ -274,14 +283,14 @@ pub async fn extract_header_value(name: &str) -> ServFnResult<Option<HeaderValue
 #[cfg(feature = "dioxus-server")]
 pub async fn require_app_token() -> ServFnResult<()> {
     let app_token = extract_app_token().await?;
-    
+
     use crate::config::APP_CONFIG;
 
     if let Some(app_token) = app_token
-        && app_token == APP_CONFIG.token || APP_CONFIG.old_tokens.contains(&app_token.to_owned())
+        && (app_token == APP_CONFIG.token || APP_CONFIG.old_tokens.contains(&app_token.to_owned()))
     {
         Ok(())
     } else {
-        Err(ServFnError::forbidden())
+        Err(ServFnError::forbidden().into())
     }
 }

@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use figment::Figment;
 use figment::providers::{Env, Serialized};
 use serde::{Deserialize, Serialize};

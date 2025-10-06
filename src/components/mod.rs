@@ -2,13 +2,16 @@ use dioxus::core::{DynamicNode, Template, TemplateNode};
 use dioxus::prelude::*;
 
 use crate::icons::Mango3Icon;
-use crate::loader_is_active;
 
-mod form;
 mod logo;
 
-pub use form::*;
+#[cfg(feature = "dioxus-fullstack")]
+mod form;
+
 pub use logo::*;
+
+#[cfg(feature = "dioxus-fullstack")]
+pub use form::*;
 
 #[derive(Clone)]
 struct AppTitle(String);
@@ -29,7 +32,7 @@ pub fn AppProvider(children: Element, #[props(optional)] is_starting: ReadSignal
     rsx! {
         {children}
 
-        div { class: "loader", class: if !loader_is_active() { "hidden" } }
+        Loader {}
 
         div { class: "splash", class: if !is_starting() { "splash-hidden" },
             figure {
@@ -102,6 +105,22 @@ pub fn H1(children: Element) -> Element {
     rsx! {
         h1 { class: "h1", {children} }
     }
+}
+
+#[cfg(feature = "dioxus-fullstack")]
+#[component]
+fn Loader() -> Element {
+    use crate::loader_is_active;
+
+    rsx! {
+        div { class: "loader", class: if !loader_is_active() { "hidden" } }
+    }
+}
+
+#[cfg(not(feature = "dioxus-fullstack"))]
+#[component]
+fn Loader() -> Element {
+    VNode::empty()
 }
 
 #[component]
