@@ -1,7 +1,7 @@
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 use std::collections::HashMap;
 
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 use dioxus::prelude::*;
 
 pub mod constants;
@@ -10,14 +10,14 @@ pub mod constants;
 pub mod components;
 #[cfg(feature = "server")]
 pub mod config;
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 pub mod hooks;
 #[cfg(feature = "dioxus")]
 pub mod icons;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod serv_fn;
 
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
 #[cfg(feature = "server")]
@@ -32,12 +32,12 @@ pub fn generate_random_string(length: u8) -> String {
         .collect()
 }
 
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 pub fn loader_is_active() -> bool {
     LOADER_UNITS.read().values().any(|&loading| loading)
 }
 
-#[cfg(feature = "dioxus")]
+#[cfg(feature = "dioxus-fullstack")]
 async fn run_with_loader<T, F>(id: String, mut future: impl FnMut() -> F + 'static) -> T
 where
     T: 'static,

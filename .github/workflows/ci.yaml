@@ -22,7 +22,16 @@ jobs:
             - uses: actions/checkout@v5
             - uses: ./.github/actions/setup-dioxus
             - name: Check with cargo-clippy
-              run: cargo clippy -- -D warnings
+              run: |
+                  cargo clippy -- -D warnings || failed
+                  cargo clippy --features dioxus-web -- -D warnings || failed
+                  cargo clippy --features dioxus-web,dioxus-fullstack -- -D warnings || failed
+                  cargo clippy --features dioxus-desktop -- -D warnings || failed
+                  cargo clippy --features dioxus-desktop,dioxus-fullstack -- -D warnings || failed
+                  cargo clippy --features dioxus-mobile -- -D warnings || failed
+                  cargo clippy --features dioxus-mobile,dioxus-fullstack -- -D warnings || failed
+                  cargo clippy --features dioxus-server -- -D warnings || failed
+                  cargo clippy --features dioxus-server,dioxus-fullstack -- -D warnings || failed
             - name: Check with cargo-fmt
               run: cargo fmt --all --check
             - name: Check with dioxus-cli

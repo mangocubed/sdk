@@ -12,6 +12,11 @@ runs:
                   ~/.rustup/
                   target/
               key: ${{ runner.os }}-cargo-{{ hashFiles('**/Cargo.lock') }}
+        - uses: awalsh128/cache-apt-pkgs-action@latest
+          with:
+              packages: build-essential libwebkit2gtk-4.1-dev
+              version: 1.0
+              execute_install_scripts: true
         - uses: cargo-bins/cargo-binstall@main
         - name: Install Dioxus CLI
           shell: bash
