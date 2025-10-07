@@ -27,6 +27,15 @@ pub use data_storage::{DataStorage, data_storage};
 #[cfg(feature = "dioxus-fullstack")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
+#[cfg(feature = "build")]
+pub fn setup_build_env() {
+    let app_server_url = std::env::var("APP_SERVER_URL").unwrap_or_default();
+    let app_token = std::env::var("APP_TOKEN").unwrap_or_default();
+
+    println!("cargo:rustc-env=APP_SERVER_URL={app_server_url}");
+    println!("cargo:rustc-env=APP_TOKEN={app_token}");
+}
+
 #[cfg(feature = "server")]
 pub fn generate_random_string(length: u8) -> String {
     use rand::distr::Alphanumeric;
