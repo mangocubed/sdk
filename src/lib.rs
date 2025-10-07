@@ -10,12 +10,19 @@ pub mod constants;
 pub mod components;
 #[cfg(feature = "server")]
 pub mod config;
+#[cfg(feature = "dioxus")]
+mod data_storage;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod hooks;
 #[cfg(feature = "dioxus")]
 pub mod icons;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod serv_fn;
+
+#[cfg(feature = "dioxus-desktop")]
+pub use data_storage::set_project_dirs;
+#[cfg(feature = "dioxus")]
+pub use data_storage::{DataStorage, data_storage};
 
 #[cfg(feature = "dioxus-fullstack")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);

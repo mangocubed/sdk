@@ -95,3 +95,11 @@ pub fn use_form_provider<
         result,
     })
 }
+
+pub fn use_resource_with_loader<T, F>(id: String, future: impl FnMut() -> F + Copy + 'static) -> Resource<T>
+where
+    T: 'static,
+    F: Future<Output = T> + 'static,
+{
+    use_resource(move || run_with_loader(id.clone(), future))
+}
