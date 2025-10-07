@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use serde_json::Value;
 
 use crate::hooks::{use_field_error_message, use_form};
 use crate::icons::{EyeMini, EyeSlashMini};
@@ -12,14 +13,14 @@ fn on_keydown(event: KeyboardEvent) {
 }
 
 #[component]
-pub fn Form(children: Element, #[props(optional)] on_success: Callback) -> Element {
+pub fn Form(children: Element, #[props(optional)] on_success: Callback<Value>) -> Element {
     let form_context = use_form();
 
     use_effect({
         let form_context = form_context.clone();
         move || {
-            if form_context.success().is_some() {
-                on_success.call(())
+            if let Some(form_success) = form_context.success() {
+                on_success.call(form_success.data)
             }
         }
     });
@@ -76,20 +77,18 @@ fn FormField(children: Element, error: Memo<Option<String>>, label: String) -> E
 }
 
 #[component]
-pub fn FormSuccessModal(#[props(optional)] on_close: Callback) -> Element {
+pub fn FormSuccessModal(#[props(optional)] on_close: Callback<Value>) -> Element {
     let form_context = use_form();
     let mut is_open = use_signal(|| false);
+    let form_success = use_memo(move || form_context.success());
 
-    use_effect({
-        let form_context = form_context.clone();
-        move || {
-            is_open.set(form_context.success().is_some());
-        }
+    use_effect(move || {
+        is_open.set(form_success().is_some());
     });
 
     rsx! {
         Modal { is_open, is_closable: false,
-            if let Some(form_success) = form_context.success() {
+            if let Some(form_success) = form_success() {
                 {form_success.message}
             }
 
@@ -99,7 +98,9 @@ pub fn FormSuccessModal(#[props(optional)] on_close: Callback) -> Element {
                     onclick: {
                         move |event| {
                             event.prevent_default();
-                            on_close.call(());
+                            if let Some(form_success) = form_success() {
+                                on_close.call(form_success.data);
+                            }
                             is_open.set(false);
                         }
                     },

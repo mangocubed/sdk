@@ -5,6 +5,7 @@ use std::fmt::{Display, Formatter};
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use validator::ValidationErrors;
 
 #[cfg(not(feature = "dioxus-server"))]
@@ -16,7 +17,7 @@ use futures::{Sink, Stream};
 #[cfg(feature = "dioxus-server")]
 use headers::authorization::Bearer;
 #[cfg(feature = "dioxus-server")]
-use http::{HeaderMap, HeaderValue, StatusCode};
+use http::{HeaderMap, StatusCode};
 #[cfg(feature = "dioxus-web")]
 use server_fn::client::browser::BrowserClient;
 #[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
@@ -141,6 +142,7 @@ pub enum ServFnError {
     Unauthorized,
     Forbidden,
     NotFound,
+    InternalServer,
 }
 
 #[cfg(feature = "dioxus-server")]
@@ -150,6 +152,7 @@ impl Display for ServFnError {
             ServFnError::Unauthorized => write!(f, "Unauthorized"),
             ServFnError::Forbidden => write!(f, "Forbidden"),
             ServFnError::NotFound => write!(f, "Not Found"),
+            ServFnError::InternalServer => write!(f, "Internal Server"),
         }
     }
 }
@@ -180,6 +183,12 @@ impl ServFnError {
 
         Self::NotFound
     }
+
+    pub fn internal_server() -> Self {
+        set_serv_fn_status(StatusCode::INTERNAL_SERVER_ERROR);
+
+        Self::InternalServer
+    }
 }
 
 #[cfg(feature = "dioxus-server")]
@@ -191,16 +200,18 @@ impl From<ServFnError> for ServerFnError<ServFnError> {
 
 pub type ServFnResult<T = ()> = ServerFnResult<T, ServFnError>;
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, PartialEq, Serialize)]
 pub struct FormSuccess {
     pub(crate) message: String,
+    pub(crate) data: Value,
 }
 
 #[cfg(feature = "dioxus-server")]
 impl FormSuccess {
-    pub fn new(message: &str) -> Self {
+    pub fn new(message: &str, data: Value) -> Self {
         Self {
             message: message.to_owned(),
+            data,
         }
     }
 }
@@ -244,24 +255,19 @@ pub type FormResult = ServerFnResult<FormSuccess, FormError>;
 
 #[cfg(feature = "dioxus-server")]
 pub async fn extract_app_token() -> ServFnResult<Option<String>> {
-    let app_token = extract::<HeaderMap, _>()
-        .await
-        .map_err(|_| ServFnError::forbidden())?
-        .get(HEADER_APP_TOKEN)
-        .and_then(|value| value.to_str().ok())
-        .map(|token| token.to_owned());
+    let app_token = extract_header(HEADER_APP_TOKEN).await?;
 
     Ok(app_token)
 }
 
 #[cfg(feature = "dioxus-server")]
-pub async fn extract_authorization_bearer() -> ServFnResult<Option<Bearer>> {
+pub async fn extract_bearer() -> ServFnResult<Option<Bearer>> {
     use axum_extra::TypedHeader;
     use headers::Authorization;
 
     if let Some(TypedHeader(Authorization(bearer))) = extract::<Option<TypedHeader<Authorization<Bearer>>>, _>()
         .await
-        .map_err(|_| ServFnError::forbidden())?
+        .map_err(|_| ServFnError::internal_server())?
     {
         Ok(Some(bearer))
     } else {
@@ -270,12 +276,13 @@ pub async fn extract_authorization_bearer() -> ServFnResult<Option<Bearer>> {
 }
 
 #[cfg(feature = "dioxus-server")]
-pub async fn extract_header_value(name: &str) -> ServFnResult<Option<HeaderValue>> {
+pub async fn extract_header(name: &str) -> ServFnResult<Option<String>> {
     let header_value = extract::<HeaderMap, _>()
         .await
-        .map_err(|_| ServFnError::forbidden())?
+        .map_err(|_| ServFnError::internal_server())?
         .get(name.to_lowercase())
-        .cloned();
+        .and_then(|value| value.to_str().ok())
+        .map(|token| token.to_owned());
 
     Ok(header_value)
 }
