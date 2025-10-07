@@ -94,6 +94,20 @@ pub fn ConfirmationModal(children: Element, is_open: Signal<bool>, on_accept: Ca
 }
 
 #[component]
+pub fn Dropdown(#[props(optional)] class: String, children: Element) -> Element {
+    rsx! {
+        div { class: format!("dropdown cursor-pointer {class}"), {children} }
+    }
+}
+
+#[component]
+pub fn DropdownContent(#[props(optional)] class: String, children: Element) -> Element {
+    rsx! {
+        div { class: format!("dropdown-content {class}"), {children} }
+    }
+}
+
+#[component]
 pub fn Footer(children: Element) -> Element {
     rsx! {
         footer { class: "footer", {children} }
