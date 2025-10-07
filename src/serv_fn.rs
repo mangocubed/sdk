@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::{LazyLock, Mutex};
 
 #[cfg(feature = "dioxus-server")]
 use std::fmt::{Display, Formatter};
@@ -31,14 +32,21 @@ use server_fn::response::browser::BrowserResponse;
 
 use crate::constants::HEADER_APP_TOKEN;
 
-static SERV_FN_HEADERS: GlobalSignal<HashMap<String, String>> = GlobalSignal::new(HashMap::new);
+static SERV_FN_HEADERS: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(Default::default);
+
+pub fn serv_fn_headers() -> HashMap<String, String> {
+    SERV_FN_HEADERS.lock().unwrap().clone()
+}
 
 pub fn remove_serv_fn_header(name: &str) {
-    SERV_FN_HEADERS.write().remove(name);
+    SERV_FN_HEADERS.lock().unwrap().remove(name);
 }
 
 pub fn set_serv_fn_header(name: &str, value: &str) {
-    SERV_FN_HEADERS.write().insert(name.to_owned(), value.to_owned());
+    SERV_FN_HEADERS
+        .lock()
+        .unwrap()
+        .insert(name.to_owned(), value.to_owned());
 }
 
 #[cfg(feature = "dioxus-server")]
@@ -61,11 +69,9 @@ where
         let headers = req.headers();
         let app_token = env!("APP_TOKEN");
 
-        if !app_token.is_empty() {
-            headers.append(HEADER_APP_TOKEN, app_token);
-        }
+        headers.append(HEADER_APP_TOKEN, app_token);
 
-        for (name, value) in SERV_FN_HEADERS() {
+        for (name, value) in serv_fn_headers() {
             headers.append(&name, &value);
         }
 
@@ -105,11 +111,9 @@ where
         let headers = req.headers_mut();
         let app_token = env!("APP_TOKEN");
 
-        if !app_token.is_empty() {
-            headers.append(HEADER_APP_TOKEN, app_token.parse().unwrap());
-        }
+        headers.append(HEADER_APP_TOKEN, app_token.parse().unwrap());
 
-        for (name, value) in SERV_FN_HEADERS() {
+        for (name, value) in serv_fn_headers() {
             let name: &'static str = Box::leak(name.into_boxed_str());
 
             headers.append(name, value.parse().unwrap());
