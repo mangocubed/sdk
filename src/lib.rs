@@ -54,16 +54,16 @@ pub fn loader_is_active() -> bool {
 }
 
 #[cfg(feature = "dioxus-fullstack")]
-async fn run_with_loader<T, F>(id: String, mut future: impl FnMut() -> F + 'static) -> T
+pub async fn run_with_loader<T, F>(id: &str, mut future: impl FnMut() -> F + 'static) -> T
 where
     T: 'static,
     F: IntoFuture<Output = T> + 'static,
 {
-    LOADER_UNITS.write().insert(id.clone(), true);
+    LOADER_UNITS.write().insert(id.to_owned(), true);
 
     let resp = future().await;
 
-    LOADER_UNITS.write().insert(id.clone(), false);
+    LOADER_UNITS.write().insert(id.to_owned(), false);
 
     resp
 }
