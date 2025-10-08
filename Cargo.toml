@@ -25,6 +25,7 @@ web-sys = { version = "0.3.81", features = ["Storage"], optional = true }
 
 [features]
 default = []
+build = []
 server = ["dep:figment", "dep:rand", "dep:validator"]
 dioxus = ["dep:dioxus", "dep:web-sys"]
 dioxus-fullstack = [
