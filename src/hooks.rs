@@ -59,7 +59,7 @@ pub fn use_form_provider<
     I: Clone + DeserializeOwned + 'static,
     R: IntoFuture<Output = FormResult>,
 >(
-    id: String,
+    id: &'static str,
     future: FA,
 ) -> FormProvider {
     let mut is_pending = use_signal(|| false);
@@ -67,7 +67,6 @@ pub fn use_form_provider<
 
     let callback = use_callback(move |input: HashMap<String, FormValue>| {
         is_pending.set(true);
-        let id = id.clone();
 
         spawn(async move {
             *result.write() = Some(
@@ -96,10 +95,10 @@ pub fn use_form_provider<
     })
 }
 
-pub fn use_resource_with_loader<T, F>(id: String, future: impl FnMut() -> F + Copy + 'static) -> Resource<T>
+pub fn use_resource_with_loader<T, F>(id: &'static str, future: impl FnMut() -> F + Copy + 'static) -> Resource<T>
 where
     T: 'static,
     F: Future<Output = T> + 'static,
 {
-    use_resource(move || run_with_loader(id.clone(), future))
+    use_resource(move || run_with_loader(id, future))
 }
