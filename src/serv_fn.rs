@@ -143,6 +143,7 @@ where
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum ServFnError {
+    BadRequest,
     Unauthorized,
     Forbidden,
     NotFound,
@@ -153,6 +154,7 @@ pub enum ServFnError {
 impl Display for ServFnError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
+            ServFnError::BadRequest => write!(f, "Bad Request"),
             ServFnError::Unauthorized => write!(f, "Unauthorized"),
             ServFnError::Forbidden => write!(f, "Forbidden"),
             ServFnError::NotFound => write!(f, "Not Found"),
@@ -170,6 +172,12 @@ fn set_serv_fn_status(status: StatusCode) {
 
 #[cfg(feature = "dioxus-server")]
 impl ServFnError {
+    pub fn bad_request() -> Self {
+        set_serv_fn_status(StatusCode::BAD_REQUEST);
+
+        Self::BadRequest
+    }
+
     pub fn unauthorized() -> Self {
         set_serv_fn_status(StatusCode::UNAUTHORIZED);
 

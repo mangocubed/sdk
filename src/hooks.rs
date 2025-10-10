@@ -42,6 +42,14 @@ impl FormProvider {
                     .find_map(|error| error.message.as_ref().map(|message| message.to_string()))
             })
     }
+
+    pub fn reset(&mut self) {
+        if *self.is_pending.read() {
+            return;
+        }
+
+        self.result.set(None);
+    }
 }
 
 pub(crate) fn use_form() -> FormProvider {
@@ -95,10 +103,10 @@ pub fn use_form_provider<
     })
 }
 
-pub fn use_resource_with_loader<T, F>(id: &'static str, future: impl FnMut() -> F + Copy + 'static) -> Resource<T>
+pub fn use_resource_with_loader<T, F>(id: &'static str, future: impl FnMut() -> F + Clone + 'static) -> Resource<T>
 where
     T: 'static,
     F: Future<Output = T> + 'static,
 {
-    use_resource(move || run_with_loader(id, future))
+    use_resource(move || run_with_loader(id, future.clone()))
 }
