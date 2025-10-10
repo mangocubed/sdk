@@ -1,28 +1,29 @@
 #[cfg(feature = "dioxus-fullstack")]
 use std::collections::HashMap;
 
-#[cfg(feature = "dioxus-fullstack")]
+#[cfg(any(feature = "dioxus-fullstack", feature = "dioxus-web"))]
 use dioxus::prelude::*;
+#[cfg(feature = "dioxus")]
+use url::Url;
 
 pub mod constants;
 
+#[cfg(feature = "auth-client")]
+pub mod auth_client;
 #[cfg(feature = "dioxus")]
 pub mod components;
 #[cfg(feature = "server")]
 pub mod config;
 #[cfg(feature = "dioxus")]
-mod data_storage;
+pub mod data_storage;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod hooks;
 #[cfg(feature = "dioxus")]
 pub mod icons;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod serv_fn;
-
-#[cfg(feature = "dioxus-desktop")]
-pub use data_storage::set_project_dirs;
-#[cfg(feature = "dioxus")]
-pub use data_storage::{DataStorage, data_storage};
+#[cfg(feature = "test-utils")]
+pub mod test_utils;
 
 #[cfg(feature = "dioxus-fullstack")]
 static LOADER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
@@ -34,6 +35,15 @@ pub fn setup_build_env() {
 
     println!("cargo:rustc-env=APP_SERVER_URL={app_server_url}");
     println!("cargo:rustc-env=APP_TOKEN={app_token}");
+
+    #[cfg(feature = "auth-client")]
+    {
+        let auth_client_id = std::env::var("AUTH_CLIENT_ID").unwrap_or_default();
+        let auth_client_provider_url = std::env::var("AUTH_CLIENT_PROVIDER_URL").unwrap_or_default();
+
+        println!("cargo:rustc-env=AUTH_CLIENT_ID={auth_client_id}");
+        println!("cargo:rustc-env=AUTH_CLIENT_PROVIDER_URL={auth_client_provider_url}");
+    }
 }
 
 #[cfg(feature = "server")]
@@ -52,6 +62,24 @@ pub fn generate_random_string(length: u8) -> String {
 pub fn loader_is_active() -> bool {
     LOADER_UNITS.read().values().any(|&loading| loading)
 }
+
+#[cfg(feature = "dioxus-web")]
+pub fn open_external_url(value: Url) {
+    navigator().push(value.to_string());
+}
+
+#[cfg(feature = "dioxus-desktop")]
+pub fn open_external_url(value: Url) {
+    let _ = dioxus::desktop::use_window().webview.load_url(value.as_ref());
+}
+
+#[cfg(feature = "dioxus-mobile")]
+pub fn open_external_url(value: Url) {
+    let _ = dioxus::mobile::use_window().webview.load_url(value.as_ref());
+}
+
+#[cfg(feature = "dioxus-server")]
+pub fn open_external_url(_value: Url) {}
 
 #[cfg(feature = "dioxus-fullstack")]
 pub async fn run_with_loader<T, F>(id: &str, mut future: impl FnMut() -> F + 'static) -> T
