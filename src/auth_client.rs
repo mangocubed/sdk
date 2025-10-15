@@ -1,7 +1,5 @@
 #[cfg(feature = "server")]
 use std::borrow::Cow;
-#[cfg(feature = "server")]
-use std::collections::HashMap;
 
 use url::Url;
 
@@ -41,15 +39,14 @@ impl<'a> AuthClient<'a> {
         }
 
         let url = self.provider_url.join("priv-api/refresh-auth")?;
-        let mut params = HashMap::new();
-
-        params.insert("client_id", self.id.to_string());
-        params.insert("client_secret", self.secret.to_string());
-        params.insert("token", auth.token.to_string());
 
         Ok(reqwest::Client::new()
             .post(url)
-            .form(&params)
+            .json(&serde_json::json!({
+                "client_id": self.id,
+                "client_secret": self.secret,
+                "token": auth.token
+            }))
             .send()
             .await?
             .json()

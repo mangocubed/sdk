@@ -3,8 +3,9 @@ use std::collections::HashMap;
 
 #[cfg(any(feature = "dioxus-fullstack", feature = "dioxus-web"))]
 use dioxus::prelude::*;
-#[cfg(feature = "dioxus")]
-use url::Url;
+
+#[cfg(any(feature = "app", feature = "dioxus"))]
+pub mod app;
 
 pub mod constants;
 
@@ -20,8 +21,6 @@ pub mod data_storage;
 pub mod hooks;
 #[cfg(feature = "dioxus")]
 pub mod icons;
-#[cfg(feature = "dioxus-fullstack")]
-pub mod serv_fn;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;
 
@@ -64,22 +63,22 @@ pub fn loader_is_active() -> bool {
 }
 
 #[cfg(feature = "dioxus-web")]
-pub fn open_external_url(value: Url) {
+pub fn open_external_url(value: url::Url) {
     navigator().push(value.to_string());
 }
 
 #[cfg(feature = "dioxus-desktop")]
-pub fn open_external_url(value: Url) {
+pub fn open_external_url(value: url::Url) {
     let _ = dioxus::desktop::use_window().webview.load_url(value.as_ref());
 }
 
 #[cfg(feature = "dioxus-mobile")]
-pub fn open_external_url(value: Url) {
+pub fn open_external_url(value: url::Url) {
     let _ = dioxus::mobile::use_window().webview.load_url(value.as_ref());
 }
 
 #[cfg(feature = "dioxus-server")]
-pub fn open_external_url(_value: Url) {}
+pub fn open_external_url(_value: url::Url) {}
 
 #[cfg(feature = "dioxus-fullstack")]
 pub async fn run_with_loader<T, F>(id: &str, mut future: impl FnMut() -> F + 'static) -> T

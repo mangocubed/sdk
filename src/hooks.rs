@@ -1,40 +1,29 @@
-use std::collections::HashMap;
-
 use dioxus::prelude::*;
 use serde::de::DeserializeOwned;
+use serde_json::Value;
 
+use crate::app::{ActionError, ActionResult, ActionSuccess};
 use crate::run_with_loader;
-use crate::serv_fn::{FormError, FormResult, FormSuccess};
 
 #[derive(Clone, PartialEq)]
 pub struct FormProvider {
-    pub(crate) callback: Callback<HashMap<String, FormValue>>,
-    result: Signal<Option<FormResult>>,
+    pub(crate) callback: Callback<Vec<(String, FormValue)>>,
+    result: Signal<Option<ActionResult>>,
     pub(crate) is_pending: Signal<bool>,
 }
 
 impl FormProvider {
-    pub(crate) fn success(&self) -> Option<FormSuccess> {
+    pub(crate) fn success(&self) -> Option<ActionSuccess> {
         self.result.read().as_ref().and_then(|result| result.clone().ok())
     }
 
-    pub(crate) fn error(&self) -> Option<FormError> {
-        self.result
-            .read()
-            .as_ref()
-            .and_then(|result| {
-                if let Err(ServerFnError::ServerError(form_error)) = result {
-                    Some(form_error)
-                } else {
-                    None
-                }
-            })
-            .cloned()
+    pub(crate) fn error(&self) -> Option<ActionError> {
+        self.result.read().as_ref().and_then(|result| result.clone().err())
     }
 
     pub(crate) fn field_error_message(&self, id: &str) -> Option<String> {
         self.error()
-            .and_then(|error| error.validation_errors)
+            .and_then(|error| error.details)
             .and_then(|validation_errors| validation_errors.field_errors().get(id).cloned().cloned())
             .and_then(|field_errors| {
                 field_errors
@@ -65,7 +54,7 @@ pub(crate) fn use_field_error_message(id: String) -> Memo<Option<String>> {
 pub fn use_form_provider<
     FA: Fn(I) -> R + Copy + 'static,
     I: Clone + DeserializeOwned + 'static,
-    R: IntoFuture<Output = FormResult>,
+    R: IntoFuture<Output = ActionResult>,
 >(
     id: &'static str,
     future: FA,
@@ -73,7 +62,7 @@ pub fn use_form_provider<
     let mut is_pending = use_signal(|| false);
     let mut result = use_signal(|| None);
 
-    let callback = use_callback(move |input: HashMap<String, FormValue>| {
+    let callback = use_callback(move |input: Vec<(String, FormValue)>| {
         is_pending.set(true);
 
         spawn(async move {
@@ -82,7 +71,13 @@ pub fn use_form_provider<
                     let input = serde_json::from_value(
                         input
                             .iter()
-                            .map(|(name, value)| (name.clone(), value.as_value()))
+                            .filter_map(|(name, value)| {
+                                if let FormValue::Text(text) = value {
+                                    Some((name.clone(), Value::String(text.clone())))
+                                } else {
+                                    None
+                                }
+                            })
                             .collect(),
                     )
                     .expect("Could not get input");
