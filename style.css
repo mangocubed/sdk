@@ -106,7 +106,7 @@
     }
 }
 
-@utility loader {
+@utility spinner {
     @apply loading loading-spinner loading-xl fixed bottom-3 right-3;
 }
 

@@ -157,7 +157,6 @@ impl DataStorage for DataFileStorage {
     }
 }
 
-#[cfg(any(feature = "app-server", feature = "dioxus-server"))]
 impl DataStorage for () {
     fn new() -> Self {}
 

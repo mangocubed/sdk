@@ -36,10 +36,12 @@ gloo-net = { version = "0.6.0", features = ["json"] }
 [features]
 default = []
 app = ["dep:dioxus", "dep:validator"]
-app-server = ["dep:axum", "dep:headers", "dioxus/server", "app", "server"]
+web = ["dioxus/web", "app"]
+desktop = ["dioxus/desktop", "app"]
+mobile = ["dioxus/mobile", "app"]
+server = ["dep:axum", "dep:figment", "dep:headers", "dep:rand", "dep:url", "dep:validator", "app"]
 auth-client = ["dep:anyhow", "dep:chrono", "dep:url", "dep:uuid"]
 build = []
-server = ["dep:figment", "dep:rand", "dep:url", "dep:validator"]
 dioxus = ["dep:dioxus", "dep:url", "dep:validator", "dep:web-sys"]
 dioxus-fullstack = [
     "dep:futures",

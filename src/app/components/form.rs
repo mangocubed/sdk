@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 use serde_json::Value;
 
+use crate::app::hooks::{use_field_error_message, use_form};
 use crate::app::icons::{EyeMini, EyeSlashMini};
-use crate::hooks::{use_field_error_message, use_form};
 
 use super::Modal;
 
