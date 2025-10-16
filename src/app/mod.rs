@@ -19,6 +19,7 @@ use crate::constants::HEADER_APP_TOKEN;
 use crate::constants::HEADER_AUTHORIZATION;
 
 pub mod components;
+pub mod icons;
 
 #[cfg(feature = "app-server")]
 pub mod server;
