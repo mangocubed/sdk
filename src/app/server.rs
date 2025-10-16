@@ -16,7 +16,7 @@ pub fn extract_bearer(headers: &HeaderMap) -> Result<Bearer, (StatusCode, &'stat
 }
 
 pub async fn require_app_token<'a>(headers: &HeaderMap) -> Result<(), (StatusCode, &'a str)> {
-    use crate::config::APP_CONFIG;
+    use crate::core::config::APP_CONFIG;
 
     let app_token = headers
         .get(HEADER_APP_TOKEN)

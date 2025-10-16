@@ -1,26 +1,18 @@
-#[cfg(feature = "server")]
 use std::borrow::Cow;
 
-use url::Url;
-
-#[cfg(feature = "server")]
 use chrono::{DateTime, NaiveDate, Utc};
-#[cfg(feature = "server")]
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "server")]
+use url::Url;
 use uuid::Uuid;
 
-#[cfg(feature = "server")]
-use crate::config::AUTH_CLIENT_CONFIG;
+use super::config::AUTH_CLIENT_CONFIG;
 
-#[cfg(feature = "server")]
 pub struct AuthClient<'a> {
     id: Uuid,
     secret: Cow<'a, str>,
     provider_url: Url,
 }
 
-#[cfg(feature = "server")]
 impl<'a> Default for AuthClient<'a> {
     fn default() -> Self {
         Self {
@@ -31,7 +23,6 @@ impl<'a> Default for AuthClient<'a> {
     }
 }
 
-#[cfg(feature = "server")]
 impl<'a> AuthClient<'a> {
     pub async fn refresh_auth(&self, auth: &Auth<'_>) -> anyhow::Result<Auth<'_>> {
         if auth.is_expired() {
@@ -86,7 +77,6 @@ impl<'a> AuthClient<'a> {
     }
 }
 
-#[cfg(feature = "server")]
 #[derive(Deserialize, Serialize)]
 pub struct Auth<'a> {
     pub token: Cow<'a, str>,
@@ -94,7 +84,6 @@ pub struct Auth<'a> {
     pub refreshed_at: Option<DateTime<Utc>>,
 }
 
-#[cfg(feature = "server")]
 impl<'a> Auth<'a> {
     pub fn new(token: &'a str, expires_at: DateTime<Utc>, refreshed_at: Option<DateTime<Utc>>) -> Self {
         Self {
@@ -109,7 +98,6 @@ impl<'a> Auth<'a> {
     }
 }
 
-#[cfg(feature = "server")]
 #[derive(Deserialize)]
 pub struct UserInfo<'a> {
     pub id: Uuid,
@@ -125,29 +113,6 @@ pub struct UserInfo<'a> {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-#[cfg(feature = "server")]
 pub fn auth_client<'a>() -> AuthClient<'a> {
     AuthClient::default()
-}
-
-pub fn auth_client_provider_url() -> Url {
-    #[cfg(feature = "server")]
-    return AUTH_CLIENT_CONFIG.provider_url();
-
-    #[cfg(not(feature = "server"))]
-    env!("AUTH_CLIENT_PROVIDER_URL")
-        .parse()
-        .expect("Could not parse Auth client provider URL")
-}
-
-pub fn auth_client_authorize_url() -> Url {
-    let mut url = auth_client_provider_url().join("authorize").unwrap();
-
-    #[cfg(feature = "server")]
-    url.set_query(Some(&format!("client_id={}", AUTH_CLIENT_CONFIG.id())));
-
-    #[cfg(not(feature = "server"))]
-    url.set_query(Some(&format!("client_id={}", env!("AUTH_CLIENT_ID"))));
-
-    url
 }

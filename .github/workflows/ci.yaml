@@ -24,19 +24,16 @@ jobs:
             - name: Check with cargo-clippy
               run: |
                   cargo clippy -- -D warnings || failed
+                  cargo clippy --features core -- -D warnings || failed
+                  cargo clippy --features app -- -D warnings || failed
+                  cargo clippy --features web -- -D warnings || failed
+                  cargo clippy --features desktop -- -D warnings || failed
+                  cargo clippy --features mobile -- -D warnings || failed
+                  cargo clippy --features server -- -D warnings || failed
                   cargo clippy --features auth-client -- -D warnings || failed
                   cargo clippy --features auth-client,build -- -D warnings || failed
-                  cargo clippy --features auth-client,server -- -D warnings || failed
+                  cargo clippy --features auth-client,core -- -D warnings || failed
                   cargo clippy --features build -- -D warnings || failed
-                  cargo clippy --features server -- -D warnings || failed
-                  cargo clippy --features dioxus-web -- -D warnings || failed
-                  cargo clippy --features dioxus-web,dioxus-fullstack -- -D warnings || failed
-                  cargo clippy --features dioxus-desktop -- -D warnings || failed
-                  cargo clippy --features dioxus-desktop,dioxus-fullstack -- -D warnings || failed
-                  cargo clippy --features dioxus-mobile -- -D warnings || failed
-                  cargo clippy --features dioxus-mobile,dioxus-fullstack -- -D warnings || failed
-                  cargo clippy --features dioxus-server -- -D warnings || failed
-                  cargo clippy --features dioxus-server,dioxus-fullstack -- -D warnings || failed
                   cargo clippy --features test-utils -- -D warnings || failed
             - name: Check with cargo-fmt
               run: cargo fmt --all --check

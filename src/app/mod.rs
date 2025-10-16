@@ -18,6 +18,8 @@ use crate::constants::HEADER_APP_TOKEN;
 
 #[cfg(target_arch = "wasm32")]
 use crate::constants::HEADER_AUTHORIZATION;
+#[cfg(all(feature = "auth-client", feature = "server"))]
+use crate::core::config::AUTH_CLIENT_CONFIG;
 
 pub mod components;
 mod data_storage;
@@ -231,4 +233,28 @@ where
 
 pub fn spinner_is_active() -> bool {
     SPINNER_UNITS.read().values().any(|&loading| loading)
+}
+
+#[cfg(feature = "auth-client")]
+pub fn auth_client_provider_url() -> url::Url {
+    #[cfg(feature = "server")]
+    return AUTH_CLIENT_CONFIG.provider_url();
+
+    #[cfg(not(feature = "server"))]
+    env!("AUTH_CLIENT_PROVIDER_URL")
+        .parse()
+        .expect("Could not parse Auth client provider URL")
+}
+
+#[cfg(feature = "auth-client")]
+pub fn auth_client_authorize_url() -> url::Url {
+    let mut url = auth_client_provider_url().join("authorize").unwrap();
+
+    #[cfg(feature = "server")]
+    url.set_query(Some(&format!("client_id={}", AUTH_CLIENT_CONFIG.id())));
+
+    #[cfg(not(feature = "server"))]
+    url.set_query(Some(&format!("client_id={}", env!("AUTH_CLIENT_ID"))));
+
+    url
 }

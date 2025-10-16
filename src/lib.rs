@@ -1,12 +1,10 @@
 #[cfg(feature = "app")]
 pub mod app;
+#[cfg(feature = "core")]
+pub mod core;
 
 pub mod constants;
 
-#[cfg(feature = "auth-client")]
-pub mod auth_client;
-#[cfg(feature = "server")]
-pub mod config;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;
 
