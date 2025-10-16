@@ -11,15 +11,13 @@ pub mod constants;
 
 #[cfg(feature = "auth-client")]
 pub mod auth_client;
-#[cfg(feature = "dioxus")]
-pub mod components;
 #[cfg(feature = "server")]
 pub mod config;
 #[cfg(feature = "dioxus")]
 pub mod data_storage;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod hooks;
-#[cfg(feature = "dioxus")]
+#[cfg(any(feature = "dioxus", feature = "app"))]
 pub mod icons;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;

@@ -18,6 +18,8 @@ use crate::constants::HEADER_APP_TOKEN;
 #[cfg(target_arch = "wasm32")]
 use crate::constants::HEADER_AUTHORIZATION;
 
+pub mod components;
+
 #[cfg(feature = "app-server")]
 pub mod server;
 
