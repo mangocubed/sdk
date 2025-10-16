@@ -5,12 +5,10 @@ use super::icons::Mango3Icon;
 
 mod logo;
 
-#[cfg(feature = "dioxus-fullstack")]
 mod form;
 
 pub use logo::*;
 
-#[cfg(feature = "dioxus-fullstack")]
 pub use form::*;
 
 #[derive(Clone)]
@@ -32,7 +30,7 @@ pub fn AppProvider(children: Element, #[props(optional)] is_starting: ReadSignal
     rsx! {
         {children}
 
-        Loader {}
+        Spinner {}
 
         div { class: "splash", class: if !is_starting() { "splash-hidden" },
             figure {
@@ -121,20 +119,13 @@ pub fn H1(children: Element) -> Element {
     }
 }
 
-#[cfg(feature = "dioxus-fullstack")]
 #[component]
-fn Loader() -> Element {
-    use crate::loader_is_active;
+fn Spinner() -> Element {
+    use super::spinner_is_active;
 
     rsx! {
-        div { class: "loader", class: if !loader_is_active() { "hidden" } }
+        div { class: "spinner", class: if !spinner_is_active() { "spinner" } }
     }
-}
-
-#[cfg(not(feature = "dioxus-fullstack"))]
-#[component]
-fn Loader() -> Element {
-    VNode::empty()
 }
 
 #[component]

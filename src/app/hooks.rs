@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
-use crate::app::{ActionError, ActionResult, ActionSuccess};
-use crate::run_with_loader;
+use super::run_with_spinner;
+use super::{ActionError, ActionResult, ActionSuccess};
 
 #[derive(Clone, PartialEq)]
 pub struct FormProvider {
@@ -67,7 +67,7 @@ pub fn use_form_provider<
 
         spawn(async move {
             *result.write() = Some(
-                run_with_loader(id, move || {
+                run_with_spinner(id, move || {
                     let input = serde_json::from_value(
                         input
                             .iter()
@@ -98,10 +98,10 @@ pub fn use_form_provider<
     })
 }
 
-pub fn use_resource_with_loader<T, F>(id: &'static str, future: impl FnMut() -> F + Clone + 'static) -> Resource<T>
+pub fn use_resource_with_spinner<T, F>(id: &'static str, future: impl FnMut() -> F + Clone + 'static) -> Resource<T>
 where
     T: 'static,
     F: Future<Output = T> + 'static,
 {
-    use_resource(move || run_with_loader(id, future.clone()))
+    use_resource(move || run_with_spinner(id, future.clone()))
 }

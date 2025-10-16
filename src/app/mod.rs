@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 
+use dioxus::prelude::*;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -19,14 +20,16 @@ use crate::constants::HEADER_APP_TOKEN;
 use crate::constants::HEADER_AUTHORIZATION;
 
 pub mod components;
+pub mod hooks;
 pub mod icons;
 
-#[cfg(feature = "app-server")]
+#[cfg(feature = "server")]
 pub mod server;
 
-#[cfg(feature = "app-server")]
+#[cfg(feature = "server")]
 pub use server::*;
 
+static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 static REQUEST_BEARER: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
 static REQUEST_HEADERS: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(Default::default);
 
@@ -192,4 +195,40 @@ pub fn set_request_header(name: &str, value: &str) {
 
 fn request_url(path: &str) -> String {
     format!("{}{}", env!("APP_SERVER_URL"), path)
+}
+
+#[cfg(feature = "web")]
+pub fn open_external_url(value: url::Url) {
+    navigator().push(value.to_string());
+}
+
+#[cfg(feature = "desktop")]
+pub fn open_external_url(value: url::Url) {
+    let _ = dioxus::desktop::use_window().webview.load_url(value.as_ref());
+}
+
+#[cfg(feature = "mobile")]
+pub fn open_external_url(value: url::Url) {
+    let _ = dioxus::mobile::use_window().webview.load_url(value.as_ref());
+}
+
+#[cfg(feature = "server")]
+pub fn open_external_url(_value: url::Url) {}
+
+pub async fn run_with_spinner<T, F>(id: &str, mut future: impl FnMut() -> F + 'static) -> T
+where
+    T: 'static,
+    F: IntoFuture<Output = T> + 'static,
+{
+    SPINNER_UNITS.write().insert(id.to_owned(), true);
+
+    let resp = future().await;
+
+    SPINNER_UNITS.write().insert(id.to_owned(), false);
+
+    resp
+}
+
+pub fn spinner_is_active() -> bool {
+    SPINNER_UNITS.read().values().any(|&loading| loading)
 }
