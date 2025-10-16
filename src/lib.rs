@@ -1,4 +1,4 @@
-#[cfg(any(feature = "app", feature = "dioxus"))]
+#[cfg(feature = "app")]
 pub mod app;
 
 pub mod constants;
@@ -7,8 +7,6 @@ pub mod constants;
 pub mod auth_client;
 #[cfg(feature = "server")]
 pub mod config;
-#[cfg(feature = "dioxus")]
-pub mod data_storage;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;
 

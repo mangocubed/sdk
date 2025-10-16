@@ -16,10 +16,7 @@ struct AppTitle(String);
 
 #[component]
 pub fn AppProvider(children: Element, #[props(optional)] is_starting: ReadSignal<bool>) -> Element {
-    #[cfg(not(feature = "dioxus-fullstack"))]
-    let mut app_title = "Mango³".to_owned();
-    #[cfg(feature = "dioxus-fullstack")]
-    let mut app_title = use_server_cached(|| dioxus::cli_config::app_title().unwrap_or("Mango³".to_owned()));
+    let mut app_title = env!("APP_TITLE").to_owned();
 
     if cfg!(debug_assertions) {
         app_title += " (dev)";

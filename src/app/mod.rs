@@ -20,14 +20,14 @@ use crate::constants::HEADER_APP_TOKEN;
 use crate::constants::HEADER_AUTHORIZATION;
 
 pub mod components;
+mod data_storage;
 pub mod hooks;
 pub mod icons;
 
 #[cfg(feature = "server")]
 pub mod server;
 
-#[cfg(feature = "server")]
-pub use server::*;
+pub use data_storage::*;
 
 static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 static REQUEST_BEARER: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
