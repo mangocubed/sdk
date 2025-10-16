@@ -17,8 +17,6 @@ pub mod config;
 pub mod data_storage;
 #[cfg(feature = "dioxus-fullstack")]
 pub mod hooks;
-#[cfg(any(feature = "dioxus", feature = "app"))]
-pub mod icons;
 #[cfg(feature = "test-utils")]
 pub mod test_utils;
 

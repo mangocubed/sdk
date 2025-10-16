@@ -1,7 +1,7 @@
 use dioxus::core::{DynamicNode, Template, TemplateNode};
 use dioxus::prelude::*;
 
-use crate::icons::Mango3Icon;
+use super::icons::Mango3Icon;
 
 mod logo;
 
