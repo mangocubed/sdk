@@ -1,10 +1,10 @@
-#[cfg(feature = "dioxus-desktop")]
+#[cfg(feature = "desktop")]
 use std::sync::OnceLock;
 
-#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+#[cfg(any(feature = "desktop", feature = "mobile"))]
 use serde_json::Value;
 
-#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+#[cfg(any(feature = "desktop", feature = "mobile"))]
 static DATA_FILE_STORAGE: std::sync::LazyLock<DataFileStorage> = std::sync::LazyLock::new(|| {
     use std::fs;
 
@@ -17,7 +17,7 @@ static DATA_FILE_STORAGE: std::sync::LazyLock<DataFileStorage> = std::sync::Lazy
 
     DataFileStorage(data_file_path)
 });
-#[cfg(feature = "dioxus-desktop")]
+#[cfg(feature = "desktop")]
 static PROJECT_DIRS: OnceLock<directories::ProjectDirs> = OnceLock::new();
 
 pub trait DataStorage {
@@ -30,10 +30,10 @@ pub trait DataStorage {
     fn set(&self, key: &str, value: &str);
 }
 
-#[cfg(feature = "dioxus-web")]
+#[cfg(feature = "web")]
 struct DataWebStorage(web_sys::Storage);
 
-#[cfg(feature = "dioxus-web")]
+#[cfg(feature = "web")]
 impl DataStorage for DataWebStorage {
     fn new() -> Self {
         Self(
@@ -59,7 +59,7 @@ impl DataStorage for DataWebStorage {
     }
 }
 
-#[cfg(feature = "dioxus-desktop")]
+#[cfg(feature = "desktop")]
 fn get_config_dir() -> std::path::PathBuf {
     let config_dir = PROJECT_DIRS.get().expect("Could not get project dirs").config_dir();
 
@@ -68,7 +68,7 @@ fn get_config_dir() -> std::path::PathBuf {
     config_dir.to_path_buf()
 }
 
-#[cfg(all(feature = "dioxus-mobile", target_os = "android"))]
+#[cfg(all(feature = "mobile", target_os = "android"))]
 fn get_config_dir() -> std::path::PathBuf {
     use std::{path, sync};
 
@@ -93,22 +93,22 @@ fn get_config_dir() -> std::path::PathBuf {
     rx.recv().unwrap().unwrap()
 }
 
-#[cfg(all(feature = "dioxus-mobile", not(target_os = "android")))]
+#[cfg(all(feature = "mobile", not(target_os = "android")))]
 fn get_config_dir() -> std::path::PathBuf {
     unimplemented!()
 }
 
-#[cfg(feature = "dioxus-desktop")]
+#[cfg(feature = "desktop")]
 pub fn set_project_dirs(application: &str) {
     let _ = PROJECT_DIRS
         .set(directories::ProjectDirs::from("app", "mango3", application).expect("Could not get project dirs"));
 }
 
-#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+#[cfg(any(feature = "desktop", feature = "mobile"))]
 #[derive(Clone)]
 struct DataFileStorage(std::path::PathBuf);
 
-#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+#[cfg(any(feature = "desktop", feature = "mobile"))]
 impl DataFileStorage {
     fn read_data_file(&self) -> Value {
         use std::{fs, io};
@@ -126,7 +126,7 @@ impl DataFileStorage {
     }
 }
 
-#[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+#[cfg(any(feature = "desktop", feature = "mobile"))]
 impl DataStorage for DataFileStorage {
     fn new() -> Self {
         DATA_FILE_STORAGE.clone()
@@ -170,12 +170,12 @@ impl DataStorage for () {
 }
 
 pub fn data_storage() -> impl DataStorage {
-    #[cfg(feature = "dioxus-web")]
+    #[cfg(feature = "web")]
     {
         DataWebStorage::new()
     }
 
-    #[cfg(any(feature = "dioxus-desktop", feature = "dioxus-mobile"))]
+    #[cfg(any(feature = "desktop", feature = "mobile"))]
     {
         DataFileStorage::new()
     }

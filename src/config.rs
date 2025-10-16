@@ -24,6 +24,7 @@ pub(crate) static AUTH_CLIENT_CONFIG: LazyLock<AuthClientConfig> =
 #[derive(Deserialize, Serialize)]
 pub struct AppConfig {
     server_url: String,
+    title: String,
     pub token: String,
     pub old_tokens: Vec<String>,
 }
@@ -38,6 +39,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             server_url: "".to_owned(),
+            title: "Mango³".to_owned(),
             token: "".to_owned(),
             old_tokens: Vec::new(),
         }

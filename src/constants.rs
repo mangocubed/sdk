@@ -3,7 +3,7 @@ use std::borrow::Cow;
 #[cfg(feature = "server")]
 use std::sync::LazyLock;
 
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 use reqwest::StatusCode;
 #[cfg(feature = "server")]
 use validator::ValidationError;
@@ -19,19 +19,21 @@ pub static ERROR_ALREADY_EXISTS: LazyLock<ValidationError> =
 pub static ERROR_IS_INVALID: LazyLock<ValidationError> =
     LazyLock::new(|| ValidationError::new("invalid").with_message(Cow::Borrowed("Is invalid")));
 
+#[cfg(feature = "app")]
 pub const HEADER_APP_TOKEN: &str = "X-App-Token";
+#[cfg(feature = "app")]
 pub const HEADER_AUTHORIZATION: &str = "Authorization";
 
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_OK: (StatusCode, &str) = (StatusCode::OK, "\"Ok\"");
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_BAD_REQUEST: (StatusCode, &str) = (StatusCode::BAD_REQUEST, "\"Bad Request\"");
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_FORBIDDEN: (StatusCode, &str) = (StatusCode::FORBIDDEN, "\"Forbidden\"");
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_NOT_FOUND: (StatusCode, &str) = (StatusCode::NOT_FOUND, "\"Not Found\"");
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_UNAUTHORIZED: (StatusCode, &str) = (StatusCode::UNAUTHORIZED, "\"Unauthorized\"");
-#[cfg(all(feature = "app", feature = "server"))]
+#[cfg(feature = "server")]
 pub const RESPONSE_INTERNAL_SERVER_ERROR: (StatusCode, &str) =
     (StatusCode::INTERNAL_SERVER_ERROR, "\"Internal Server Error\"");
