@@ -25,15 +25,3 @@ pub fn setup_build_env() {
         println!("cargo:rustc-env=AUTH_CLIENT_PROVIDER_URL={auth_client_provider_url}");
     }
 }
-
-#[cfg(feature = "server")]
-pub fn generate_random_string(length: u8) -> String {
-    use rand::distr::Alphanumeric;
-    use rand::{Rng, rng};
-
-    rng()
-        .sample_iter(&Alphanumeric)
-        .take(length as usize)
-        .map(char::from)
-        .collect()
-}
