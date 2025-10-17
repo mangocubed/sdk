@@ -31,6 +31,9 @@ pub mod server;
 
 pub use data_storage::*;
 
+#[cfg(feature = "server")]
+pub use server::*;
+
 static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 static REQUEST_BEARER: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
 static REQUEST_HEADERS: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(Default::default);
@@ -196,7 +199,7 @@ pub fn set_request_header(name: &str, value: &str) {
 }
 
 fn request_url(path: &str) -> String {
-    format!("{}{}", env!("APP_SERVER_URL"), path)
+    format!("{}{}", env!("APP_REQUEST_URL"), path)
 }
 
 #[cfg(feature = "web")]
@@ -236,19 +239,19 @@ pub fn spinner_is_active() -> bool {
 }
 
 #[cfg(feature = "auth-client")]
-pub fn auth_client_provider_url() -> url::Url {
+pub fn auth_client_provider_app_url() -> url::Url {
     #[cfg(feature = "server")]
-    return AUTH_CLIENT_CONFIG.provider_url();
+    return AUTH_CLIENT_CONFIG.provider_app_url();
 
     #[cfg(not(feature = "server"))]
-    env!("AUTH_CLIENT_PROVIDER_URL")
+    env!("AUTH_CLIENT_PROVIDER_APP_URL")
         .parse()
-        .expect("Could not parse Auth client provider URL")
+        .expect("Could not parse Auth client provider app URL")
 }
 
 #[cfg(feature = "auth-client")]
 pub fn auth_client_authorize_url() -> url::Url {
-    let mut url = auth_client_provider_url().join("authorize").unwrap();
+    let mut url = auth_client_provider_app_url().join("authorize").unwrap();
 
     #[cfg(feature = "server")]
     url.set_query(Some(&format!("client_id={}", AUTH_CLIENT_CONFIG.id())));

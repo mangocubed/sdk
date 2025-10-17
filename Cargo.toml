@@ -20,6 +20,11 @@ headers = { version = "0.4.1", optional = true }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.145" }
 rand = { version = "0.9.2", optional = true }
+tokio = { version = "1.48.0", optional = true }
+tower-http = { version = "0.6.6", features = [
+    "cors",
+    "trace",
+], optional = true }
 url = { version = "2.5.7", optional = true }
 uuid = { version = "1.18.1", features = ["serde"], optional = true }
 validator = { version = "0.20.0", optional = true }
@@ -36,12 +41,20 @@ jni = { version = "0.21.1", default-features = false, optional = true }
 
 [features]
 default = []
-core = ["dep:anyhow", "dep:chrono", "dep:figment", "dep:rand", "dep:url", "dep:uuid"]
+core = [
+    "dep:anyhow",
+    "dep:chrono",
+    "dep:figment",
+    "dep:rand",
+    "dep:url",
+    "dep:uuid",
+    "dep:validator",
+]
 app = ["dep:dioxus", "dep:url", "dep:validator"]
 web = ["dep:web-sys", "dioxus/web", "app"]
 desktop = ["dep:directories", "dioxus/desktop", "app"]
 mobile = ["dioxus/mobile", "app"]
-server = ["dep:axum", "dep:headers", "app", "core"]
+server = ["dep:axum", "dep:headers", "dep:tokio", "dep:tower-http", "core"]
 auth-client = []
 build = []
 test-utils = ["dep:fake", "uuid/v4", "auth-client", "core"]

@@ -26,6 +26,7 @@ jobs:
                   cargo clippy -- -D warnings || failed
                   cargo clippy --features core -- -D warnings || failed
                   cargo clippy --features app -- -D warnings || failed
+                  cargo clippy --features app,server -- -D warnings || failed
                   cargo clippy --features web -- -D warnings || failed
                   cargo clippy --features desktop -- -D warnings || failed
                   cargo clippy --features mobile -- -D warnings || failed

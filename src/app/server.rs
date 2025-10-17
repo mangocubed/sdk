@@ -1,11 +1,17 @@
-use axum::Json;
-use axum::http::StatusCode;
+use std::net::SocketAddr;
+
+use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
+use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
-use headers::HeaderMap;
+use axum::{Json, Router};
 use headers::authorization::{Bearer, Credentials};
+use headers::{HeaderMap, HeaderName};
+use tower_http::cors::{Any, CorsLayer};
+use tower_http::trace::TraceLayer;
 use validator::ValidationErrors;
 
-use crate::constants::{HEADER_APP_TOKEN, HEADER_AUTHORIZATION, RESPONSE_FORBIDDEN, RESPONSE_UNAUTHORIZED};
+use crate::constants::*;
+use crate::core::config::APP_CONFIG;
 
 use super::{ActionError, ActionSuccess};
 
@@ -66,4 +72,34 @@ impl From<(StatusCode, &str)> for ActionError {
             details: None,
         }
     }
+}
+
+pub async fn launch_request_server(router_fn: impl FnOnce(Router) -> Router) {
+    let cors_layer = CorsLayer::new()
+        .allow_headers([
+            AUTHORIZATION,
+            CONTENT_TYPE,
+            USER_AGENT,
+            HeaderName::from_static(HEADER_APP_TOKEN),
+            HeaderName::from_static(HEADER_X_REAL_IP),
+        ])
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PATCH,
+            Method::DELETE,
+            Method::OPTIONS,
+        ])
+        .allow_origin(Any);
+    let trace_layer = TraceLayer::new_for_http();
+
+    let router = router_fn(Router::new()).layer(cors_layer).layer(trace_layer);
+
+    let address = &APP_CONFIG.request_address;
+
+    let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
+
+    axum::serve(listener, router.into_make_service_with_connect_info::<SocketAddr>())
+        .await
+        .unwrap();
 }
