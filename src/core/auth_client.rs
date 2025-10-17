@@ -10,7 +10,7 @@ use super::config::AUTH_CLIENT_CONFIG;
 pub struct AuthClient<'a> {
     id: Uuid,
     secret: Cow<'a, str>,
-    provider_url: Url,
+    provider_api_url: Url,
 }
 
 impl<'a> Default for AuthClient<'a> {
@@ -18,7 +18,7 @@ impl<'a> Default for AuthClient<'a> {
         Self {
             id: AUTH_CLIENT_CONFIG.id(),
             secret: Cow::Owned(AUTH_CLIENT_CONFIG.secret.clone()),
-            provider_url: AUTH_CLIENT_CONFIG.provider_url(),
+            provider_api_url: AUTH_CLIENT_CONFIG.provider_api_url(),
         }
     }
 }
@@ -29,7 +29,7 @@ impl<'a> AuthClient<'a> {
             return Err(anyhow::anyhow!("Authorization is expired"));
         }
 
-        let url = self.provider_url.join("priv-api/refresh-auth")?;
+        let url = self.provider_api_url.join("private/refresh-auth")?;
 
         Ok(reqwest::Client::new()
             .post(url)
@@ -49,7 +49,7 @@ impl<'a> AuthClient<'a> {
             return Err(anyhow::anyhow!("Authorization is expired"));
         }
 
-        let url = self.provider_url.join("priv-api/user-info")?;
+        let url = self.provider_api_url.join("private/user-info")?;
 
         Ok(reqwest::Client::new()
             .get(url)
@@ -65,7 +65,7 @@ impl<'a> AuthClient<'a> {
             return Err(anyhow::anyhow!("Authorization is expired"));
         }
 
-        let url = self.provider_url.join("priv-api/verify-auth")?;
+        let url = self.provider_api_url.join("private/verify-auth")?;
 
         Ok(reqwest::Client::new()
             .get(url)

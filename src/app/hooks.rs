@@ -1,5 +1,6 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
-use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use super::run_with_spinner;
@@ -51,11 +52,7 @@ pub(crate) fn use_field_error_message(id: String) -> Memo<Option<String>> {
     use_memo(move || form_context.field_error_message(&id))
 }
 
-pub fn use_form_provider<
-    FA: Fn(I) -> R + Copy + 'static,
-    I: Clone + DeserializeOwned + 'static,
-    R: IntoFuture<Output = ActionResult>,
->(
+pub fn use_form_provider<FA: Fn(Value) -> R + Copy + 'static, R: IntoFuture<Output = ActionResult>>(
     id: &'static str,
     future: FA,
 ) -> FormProvider {
@@ -68,7 +65,7 @@ pub fn use_form_provider<
         spawn(async move {
             *result.write() = Some(
                 run_with_spinner(id, move || {
-                    let input = serde_json::from_value(
+                    let input = serde_json::to_value(
                         input
                             .iter()
                             .filter_map(|(name, value)| {
@@ -78,7 +75,7 @@ pub fn use_form_provider<
                                     None
                                 }
                             })
-                            .collect(),
+                            .collect::<HashMap<String, Value>>(),
                     )
                     .expect("Could not get input");
 
