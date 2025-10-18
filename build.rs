@@ -1,4 +1,10 @@
 fn main() {
+    println!("cargo:rerun-if-env-changed=APP_REQUEST_URL");
+    println!("cargo:rerun-if-env-changed=APP_TITLE");
+    println!("cargo:rerun-if-env-changed=APP_TOKEN");
+    println!("cargo:rerun-if-env-changed=AUTH_CLIENT_ID");
+    println!("cargo:rerun-if-env-changed=AUTH_CLIENT_PROVIDER_APP_URL");
+
     let app_request_url = std::env::var("APP_REQUEST_URL").unwrap_or("http://127.0.0.1:8081".to_owned());
     let app_title = std::env::var("APP_TITLE").unwrap_or("Mango³".to_owned());
     let app_token = std::env::var("APP_TOKEN").unwrap_or_default();
