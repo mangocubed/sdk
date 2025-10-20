@@ -9,8 +9,8 @@ use reqwest::StatusCode;
 use validator::ValidationError;
 
 pub const COPYRIGHT: &str = "© 2025 Mango³ Group";
-pub const PRIVACY_URL: &str = "https://mango3.app/#privacy";
-pub const TERMS_URL: &str = "https://mango3.app/#terms";
+pub const PRIVACY_URL: &str = "https://mango3.app/privacy";
+pub const TERMS_URL: &str = "https://mango3.app/terms";
 
 #[cfg(feature = "core")]
 pub static ERROR_ALREADY_EXISTS: LazyLock<ValidationError> =
