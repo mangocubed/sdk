@@ -121,7 +121,7 @@ fn Spinner() -> Element {
     use super::spinner_is_active;
 
     rsx! {
-        div { class: "spinner", class: if !spinner_is_active() { "spinner" } }
+        div { class: "spinner", class: if !spinner_is_active() { "hidden" } }
     }
 }
 

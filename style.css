@@ -37,7 +37,6 @@
 @source inline("hidden");
 @source inline("input{-error,}");
 @source inline("label");
-@source inline("loader");
 @source inline("loading{-spinner,}");
 @source inline("modal{-action,-backdrop,-box,-close,-open,}");
 @source inline("navbar{-end,-start,}");
@@ -45,6 +44,7 @@
 @source inline("py-{2,3}");
 @source inline("select{-error,}");
 @source inline("size-{5,6}");
+@source inline("spinner");
 @source inline("splash");
 @source inline("text-error");
 @source inline("w-full");
