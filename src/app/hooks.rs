@@ -34,7 +34,7 @@ impl FormProvider {
     }
 
     pub fn reset(&mut self) {
-        if *self.is_pending.read() {
+        if *self.is_pending.peek() {
             return;
         }
 
