@@ -33,7 +33,7 @@
 @source inline("fieldset{-legend,}");
 @source inline("footer");
 @source inline("form");
-@source inline("h1");
+@source inline("h{1,2,3}");
 @source inline("hidden");
 @source inline("input{-error,}");
 @source inline("label");
@@ -92,6 +92,14 @@
 
 @utility h1 {
     @apply text-2xl font-bold mb-6;
+}
+
+@utility h2 {
+    @apply text-xl font-bold mb-5;
+}
+
+@utility h3 {
+    @apply text-lg font-bold mb-4;
 }
 
 @utility input {

@@ -117,6 +117,20 @@ pub fn H1(children: Element) -> Element {
 }
 
 #[component]
+pub fn H2(children: Element) -> Element {
+    rsx! {
+        h2 { class: "h2", {children} }
+    }
+}
+
+#[component]
+pub fn H3(children: Element) -> Element {
+    rsx! {
+        h3 { class: "h3", {children} }
+    }
+}
+
+#[component]
 fn Spinner() -> Element {
     use super::spinner_is_active;
 
