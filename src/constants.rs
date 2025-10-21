@@ -1,3 +1,5 @@
+#[cfg(feature = "app")]
+use http::HeaderName;
 #[cfg(feature = "core")]
 use std::borrow::Cow;
 #[cfg(feature = "core")]
@@ -43,3 +45,6 @@ pub const RESPONSE_UNAUTHORIZED: (StatusCode, &str) = (StatusCode::UNAUTHORIZED,
 #[cfg(feature = "server")]
 pub const RESPONSE_INTERNAL_SERVER_ERROR: (StatusCode, &str) =
     (StatusCode::INTERNAL_SERVER_ERROR, "\"Internal Server Error\"");
+
+#[cfg(feature = "app")]
+pub const X_APP_TOKEN: HeaderName = HeaderName::from_static("x-app-token");

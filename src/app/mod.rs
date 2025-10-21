@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use dioxus::fullstack::{get_request_headers, set_request_headers};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -27,6 +28,8 @@ pub use request::*;
 
 #[cfg(feature = "server")]
 pub use server::*;
+
+use crate::constants::X_APP_TOKEN;
 
 static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
@@ -96,6 +99,14 @@ where
     SPINNER_UNITS.write().insert(id.to_owned(), false);
 
     resp
+}
+
+pub fn set_request_header_app_token() {
+    let mut headers = get_request_headers();
+
+    headers.insert(X_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
+
+    set_request_headers(headers);
 }
 
 pub fn spinner_is_active() -> bool {
