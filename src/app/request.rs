@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 
+use dioxus::fullstack::{get_request_headers, set_request_headers};
 use dioxus::prelude::*;
+use http::header::AUTHORIZATION;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -148,6 +150,12 @@ fn request_headers() -> HashMap<String, String> {
 }
 
 pub fn remove_request_bearer() {
+    let mut headers = get_request_headers();
+
+    headers.remove(AUTHORIZATION);
+
+    set_request_headers(headers);
+
     REQUEST_BEARER.lock().unwrap().take();
 }
 
@@ -156,6 +164,12 @@ pub fn remove_request_header(name: &str) {
 }
 
 pub fn set_request_bearer(token: &str) {
+    let mut headers = get_request_headers();
+
+    headers.insert(AUTHORIZATION, format!("Bearer {}", token).parse().unwrap());
+
+    set_request_headers(headers);
+
     REQUEST_BEARER.lock().unwrap().replace(token.to_owned());
 }
 

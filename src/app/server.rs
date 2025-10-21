@@ -1,11 +1,10 @@
 use std::net::SocketAddr;
 
-use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
-use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::{Json, Router};
 use headers::authorization::{Bearer, Credentials};
-use headers::{HeaderMap, HeaderName};
+use http::header::{AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
+use http::{HeaderMap, HeaderName, Method, StatusCode};
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use validator::ValidationErrors;
