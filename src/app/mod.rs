@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use dioxus::fullstack::{get_request_headers, set_request_headers};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -28,8 +27,6 @@ pub use request::*;
 
 #[cfg(feature = "server")]
 pub use server::*;
-
-use crate::constants::X_APP_TOKEN;
 
 static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
@@ -69,6 +66,26 @@ impl<T> From<Error> for ServerError<T> {
     }
 }
 
+pub fn launch(app: fn() -> Element) {
+    #[cfg(not(feature = "server"))]
+    {
+        use dioxus::fullstack::{get_request_headers, set_request_headers};
+
+        use crate::constants::X_APP_TOKEN;
+
+        #[cfg(not(feature = "web"))]
+        dioxus::fullstack::set_server_url(env!("APP_SERVER_URL"));
+
+        let mut headers = get_request_headers();
+
+        headers.insert(X_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
+
+        set_request_headers(headers);
+    }
+
+    dioxus::launch(app)
+}
+
 #[cfg(feature = "web")]
 pub fn open_external_url(value: url::Url) {
     navigator().push(value.to_string());
@@ -99,14 +116,6 @@ where
     SPINNER_UNITS.write().insert(id.to_owned(), false);
 
     resp
-}
-
-pub fn set_request_header_app_token() {
-    let mut headers = get_request_headers();
-
-    headers.insert(X_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
-
-    set_request_headers(headers);
 }
 
 pub fn spinner_is_active() -> bool {
