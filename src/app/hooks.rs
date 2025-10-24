@@ -42,6 +42,22 @@ impl FormProvider {
     }
 }
 
+pub fn use_action_with_spinner<F, I, T>(
+    id: &'static str,
+    future: impl FnMut(I) -> F + Clone + 'static,
+) -> Action<(I,), T>
+where
+    F: Future<Output = Result<T>> + 'static,
+    I: Clone + 'static,
+    T: 'static,
+{
+    use_action(move |input: I| {
+        let mut future = future.clone();
+
+        run_with_spinner(id, move || future(input.clone()))
+    })
+}
+
 pub(crate) fn use_form() -> FormProvider {
     use_context()
 }
