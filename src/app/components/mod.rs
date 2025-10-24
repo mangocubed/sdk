@@ -176,9 +176,16 @@ pub fn Navbar(children: Element) -> Element {
 }
 
 #[component]
-pub fn NavbarEnd(children: Element) -> Element {
+pub fn NavbarCenter(#[props(optional)] class: String, children: Element) -> Element {
     rsx! {
-        div { class: "navbar-end", {children} }
+        div { class: format!("navbar-center {class}"), {children} }
+    }
+}
+
+#[component]
+pub fn NavbarEnd(#[props(optional)] class: String, children: Element) -> Element {
+    rsx! {
+        div { class: format!("navbar-end {class}"), {children} }
     }
 }
 
