@@ -46,6 +46,7 @@ impl ActionError {
     pub fn new(message: &str, validation_errors: Option<ValidationErrors>) -> Self {
         Self {
             message: message.to_owned(),
+            code: 422,
             details: validation_errors,
         }
     }
@@ -57,6 +58,7 @@ impl IntoResponse for ActionError {
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(serde_json::json!({
                 "message": self.message,
+                "code": self.code,
                 "details": self.details
             })),
         )
@@ -65,9 +67,10 @@ impl IntoResponse for ActionError {
 }
 
 impl From<(StatusCode, &str)> for ActionError {
-    fn from((_, message): (StatusCode, &str)) -> Self {
+    fn from((status_code, message): (StatusCode, &str)) -> Self {
         Self {
             message: message.to_owned(),
+            code: status_code.as_u16(),
             details: None,
         }
     }
