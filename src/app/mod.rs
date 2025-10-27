@@ -1,10 +1,15 @@
 use std::collections::HashMap;
 
+#[cfg(feature = "server")]
+use std::fmt::{Display, Formatter};
+
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use validator::ValidationErrors;
 
+#[cfg(feature = "server")]
+use dioxus::fullstack::AsStatusCode;
 #[cfg(target_arch = "wasm32")]
 use gloo_net::Error;
 #[cfg(not(target_arch = "wasm32"))]
@@ -32,14 +37,70 @@ static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(Ha
 
 pub type ActionResult = Result<ActionSuccess, ActionError>;
 
-pub type ServerResult<T = Option<String>, E = Option<String>> = Result<T, ServerError<E>>;
+pub type ServFnResult<T = Option<String>, E = Option<String>> = Result<T, ServFnError<E>>;
 
-pub type ActionError = ServerError<ValidationErrors>;
+pub type ServerResult<T = Option<String>> = ServFnResult<T>;
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct ServerError<T> {
+pub type ActionError = ServFnError<ValidationErrors>;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct ServFnError<T> {
     pub message: String,
+    pub code: u16,
     pub details: Option<T>,
+}
+
+#[cfg(feature = "server")]
+impl<T> Display for ServFnError<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+#[cfg(feature = "server")]
+impl<T> AsStatusCode for ServFnError<T> {
+    fn as_status_code(&self) -> StatusCode {
+        StatusCode::from_u16(self.code).expect("Could not get status code")
+    }
+}
+
+impl<T> From<ServerFnError> for ServFnError<T> {
+    fn from(error: ServerFnError) -> Self {
+        match error {
+            ServerFnError::ServerError { message, code, .. } => Self {
+                message,
+                code,
+                details: None,
+            },
+            _ => Self {
+                message: error.to_string(),
+                code: 500,
+                details: None,
+            },
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+impl<T> From<HttpError> for ServFnError<T> {
+    fn from(error: HttpError) -> Self {
+        Self {
+            message: error.message.unwrap_or_else(|| error.status.to_string()),
+            code: error.status.as_u16(),
+            details: None,
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+impl<T> From<serde_json::Error> for ServFnError<T> {
+    fn from(error: serde_json::Error) -> Self {
+        Self {
+            message: error.to_string(),
+            code: 400,
+            details: None,
+        }
+    }
 }
 
 #[derive(Clone, Deserialize, PartialEq, Serialize)]
@@ -57,10 +118,11 @@ impl ActionSuccess {
     }
 }
 
-impl<T> From<Error> for ServerError<T> {
+impl<T> From<Error> for ServFnError<T> {
     fn from(error: Error) -> Self {
         Self {
             message: error.to_string(),
+            code: 500,
             details: None,
         }
     }
