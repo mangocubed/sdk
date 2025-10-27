@@ -104,7 +104,7 @@ pub fn open_external_url(value: url::Url) {
 #[cfg(feature = "server")]
 pub fn open_external_url(_value: url::Url) {}
 
-pub async fn run_with_spinner<T, F>(id: &str, mut future: impl FnMut() -> F + 'static) -> T
+pub async fn run_with_spinner<T, F>(id: &str, future: impl Fn() -> F + 'static) -> T
 where
     T: 'static,
     F: IntoFuture<Output = T> + 'static,

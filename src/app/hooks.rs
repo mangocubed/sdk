@@ -42,17 +42,14 @@ impl FormProvider {
     }
 }
 
-pub fn use_action_with_spinner<F, I, T>(
-    id: &'static str,
-    future: impl FnMut(I) -> F + Clone + 'static,
-) -> Action<(I,), T>
+pub fn use_action_with_spinner<F, I, T>(id: &'static str, future: impl Fn(I) -> F + Clone + 'static) -> Action<(I,), T>
 where
     F: Future<Output = Result<T>> + 'static,
     I: Clone + 'static,
     T: 'static,
 {
     use_action(move |input: I| {
-        let mut future = future.clone();
+        let future = future.clone();
 
         run_with_spinner(id, move || future(input.clone()))
     })
@@ -111,7 +108,7 @@ pub fn use_form_provider<FA: Fn(Value) -> R + Copy + 'static, R: IntoFuture<Outp
     })
 }
 
-pub fn use_resource_with_spinner<T, F>(id: &'static str, future: impl FnMut() -> F + Clone + 'static) -> Resource<T>
+pub fn use_resource_with_spinner<T, F>(id: &'static str, future: impl Fn() -> F + Clone + 'static) -> Resource<T>
 where
     T: 'static,
     F: Future<Output = T> + 'static,
