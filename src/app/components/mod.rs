@@ -3,13 +3,11 @@ use dioxus::prelude::*;
 
 use super::icons::Mango3Icon;
 
+mod form;
 mod logo;
 
-mod form;
-
-pub use logo::*;
-
 pub use form::*;
+pub use logo::*;
 
 #[derive(Clone)]
 struct AppTitle(String);

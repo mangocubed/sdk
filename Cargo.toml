@@ -12,7 +12,7 @@ axum-extra = { version = "0.10.3", features = [
     "typed-header",
 ], optional = true }
 chrono = { version = "0.4.42", features = ["serde"], optional = true }
-dioxus = { git = "https://github.com/javierEd/dioxus.git", rev = "223c320", features = [
+dioxus = { git = "https://github.com/javierEd/dioxus.git", rev = "3203448", features = [
     "fullstack",
     "router",
 ], optional = true }
