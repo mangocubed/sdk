@@ -188,6 +188,13 @@
     }
 }
 
+@utility tooltip {
+    &::before,
+    .tooltip-content {
+        @apply border-solid border-1 border-accent;
+    }
+}
+
 /* Keyframes */
 @keyframes splash-pulse {
     0% {
