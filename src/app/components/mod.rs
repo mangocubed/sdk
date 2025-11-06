@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use dioxus::core::{DynamicNode, Template, TemplateNode};
 use dioxus::prelude::*;
 
@@ -145,22 +147,49 @@ pub fn Modal(
     #[props(default = true)] is_closable: bool,
     #[props(optional)] on_close: Callback<MouseEvent>,
 ) -> Element {
+    let mut is_visible = use_signal(move || *is_open.read());
+
     let on_close = move |event: MouseEvent| {
         event.prevent_default();
         *is_open.write() = false;
         on_close.call(event);
     };
 
+    use_effect(move || {
+        if !*is_open.read() && *is_visible.read() {
+            spawn(async move {
+                let duration = Duration::from_millis(300);
+                #[cfg(not(target_family = "wasm"))]
+                tokio::time::sleep(duration).await;
+
+                #[cfg(target_family = "wasm")]
+                gloo_timers::future::sleep(duration).await;
+
+                is_visible.set(false);
+            });
+        }
+    });
+
     rsx! {
-        dialog { class: "modal", class: if is_open() { "modal-open" },
-            if is_closable {
-                button { class: "modal-close", onclick: on_close, "✕" }
-            }
+        if is_open() || is_visible() {
+            dialog {
+                class: "modal",
+                class: if is_open() && is_visible() { "modal-open" },
+                onmounted: move |_| async move {
+                    let duration = Duration::from_millis(1);
+                    #[cfg(not(target_family = "wasm"))] tokio::time::sleep(duration).await;
+                    #[cfg(target_family = "wasm")] gloo_timers::future::sleep(duration).await;
+                    is_visible.set(true);
+                },
+                if is_closable {
+                    button { class: "modal-close", onclick: on_close, "✕" }
+                }
 
-            div { class: format!("modal-box {class}"), {children} }
+                div { class: format!("modal-box {class}"), {children} }
 
-            if is_closable {
-                div { class: "modal-backdrop", onclick: on_close }
+                if is_closable {
+                    div { class: "modal-backdrop", onclick: on_close }
+                }
             }
         }
     }
