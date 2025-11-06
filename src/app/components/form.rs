@@ -64,7 +64,7 @@ pub fn Form(children: Element, #[props(optional)] on_success: Callback<Value>) -
 }
 
 #[component]
-fn FormField(children: Element, error: Memo<Option<String>>, label: String) -> Element {
+fn FormField(children: Element, error: Memo<Option<String>>, #[props(optional)] label: String) -> Element {
     rsx! {
         fieldset { class: "fieldset",
             legend { class: "fieldset-legend empty:hidden", {label} }
@@ -194,6 +194,44 @@ pub fn TextField(
                 },
                 r#type: input_type,
                 value,
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ToggleField(
+    id: String,
+    label: String,
+    name: String,
+    #[props(into, optional)] checked: ReadSignal<bool>,
+    #[props(default = "false".to_owned())] unchecked_value: String,
+    #[props(default = "true".to_owned())] checked_value: String,
+) -> Element {
+    let error = use_field_error_message(id.clone());
+
+    rsx! {
+        FormField { error,
+            if !checked() {
+                input {
+                    r#type: "hidden",
+                    name: name.clone(),
+                    value: unchecked_value,
+                }
+            }
+
+            label { class: "fieldset-legend",
+                span { {label} }
+
+                input {
+                    checked,
+                    class: "toggle",
+                    class: if error().is_some() { "toggle-error" },
+                    id,
+                    name,
+                    r#type: "checkbox",
+                    value: checked_value,
+                }
             }
         }
     }
