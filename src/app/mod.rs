@@ -10,9 +10,9 @@ use validator::ValidationErrors;
 
 #[cfg(feature = "server")]
 use dioxus::fullstack::AsStatusCode;
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use gloo_net::Error;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 use reqwest::Error;
 
 #[cfg(all(feature = "auth-client", feature = "server"))]

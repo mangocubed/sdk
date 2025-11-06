@@ -8,16 +8,16 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use gloo_net::Error;
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use gloo_net::http::{Method, RequestBuilder};
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 use reqwest::{Error, Method, RequestBuilder};
 
 use crate::constants::HEADER_APP_TOKEN;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use crate::constants::HEADER_AUTHORIZATION;
 
 static REQUEST_BEARER: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
@@ -29,7 +29,7 @@ pub struct Request {
 }
 
 impl Request {
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     fn new(method: Method, path: &str) -> Self {
         let client = reqwest::Client::new();
 
@@ -48,7 +48,7 @@ impl Request {
         Self { builder, json: None }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     pub fn new(method: Method, path: &str) -> Self {
         let mut builder = RequestBuilder::new(&request_url(path))
             .method(method)
@@ -87,14 +87,14 @@ impl Request {
         self
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub fn query<T: Serialize + ?Sized>(mut self, query: &T) -> Self {
         self.builder = self.builder.query(query);
 
         self
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     pub fn query<T: Serialize + ?Sized>(mut self, query: &T) -> Self {
         let query = serde_json::to_value(query).unwrap();
         let query = query
@@ -110,9 +110,10 @@ impl Request {
 
     pub async fn send<T: DeserializeOwned, E: DeserializeOwned + From<Error>>(self) -> Result<T, E> {
         let response = if let Some(json) = self.json {
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(target_family = "wasm"))]
             let builder = self.builder.json(&json);
-            #[cfg(target_arch = "wasm32")]
+
+            #[cfg(target_family = "wasm")]
             let builder = self.builder.json(&json)?;
 
             builder.send().await?
@@ -120,9 +121,10 @@ impl Request {
             self.builder.send().await?
         };
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         let status_code = response.status().as_u16();
-        #[cfg(target_arch = "wasm32")]
+
+        #[cfg(target_family = "wasm")]
         let status_code = response.status();
 
         match status_code {
