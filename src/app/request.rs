@@ -1,9 +1,7 @@
-use std::collections::HashMap;
-use std::sync::{LazyLock, Mutex};
-
 use dioxus::fullstack::{get_request_headers, set_request_headers};
 use dioxus::prelude::*;
 use http::header::AUTHORIZATION;
+use http::{HeaderName, HeaderValue};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -15,13 +13,8 @@ use gloo_net::http::{Method, RequestBuilder};
 #[cfg(not(target_family = "wasm"))]
 use reqwest::{Error, Method, RequestBuilder};
 
-use crate::constants::HEADER_APP_TOKEN;
-
 #[cfg(target_family = "wasm")]
 use crate::constants::HEADER_AUTHORIZATION;
-
-static REQUEST_BEARER: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
-static REQUEST_HEADERS: LazyLock<Mutex<HashMap<String, String>>> = LazyLock::new(Default::default);
 
 pub struct Request {
     builder: RequestBuilder,
@@ -33,33 +26,17 @@ impl Request {
     fn new(method: Method, path: &str) -> Self {
         let client = reqwest::Client::new();
 
-        let mut builder = client
-            .request(method, request_url(path))
-            .header(HEADER_APP_TOKEN, env!("APP_TOKEN"));
-
-        for (name, value) in request_headers() {
-            builder = builder.header(name, value);
-        }
-
-        if let Some(token) = request_bearer() {
-            builder = builder.bearer_auth(token);
-        }
+        let builder = client.request(method, request_url(path)).headers(get_request_headers());
 
         Self { builder, json: None }
     }
 
     #[cfg(target_family = "wasm")]
     pub fn new(method: Method, path: &str) -> Self {
-        let mut builder = RequestBuilder::new(&request_url(path))
-            .method(method)
-            .header(HEADER_APP_TOKEN, env!("APP_TOKEN"));
+        let mut builder = RequestBuilder::new(&request_url(path)).method(method);
 
-        for (name, value) in request_headers() {
-            builder = builder.header(&name, &value);
-        }
-
-        if let Some(token) = request_bearer() {
-            builder = builder.header(HEADER_AUTHORIZATION, &format!("Bearer {token}"));
+        for (name, value) in get_request_headers().iter() {
+            builder = builder.header(name.as_str(), value.to_str().unwrap());
         }
 
         Self { builder, json: None }
@@ -143,43 +120,36 @@ impl Request {
     }
 }
 
-fn request_bearer() -> Option<String> {
-    REQUEST_BEARER.lock().unwrap().clone()
-}
-
-fn request_headers() -> HashMap<String, String> {
-    REQUEST_HEADERS.lock().unwrap().clone()
+pub fn get_request_bearer() -> Option<String> {
+    get_request_headers()
+        .get(AUTHORIZATION)
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "))
+        .map(|value| value.to_owned())
 }
 
 pub fn remove_request_bearer() {
-    let mut headers = get_request_headers();
-
-    headers.remove(AUTHORIZATION);
-
-    set_request_headers(headers);
-
-    REQUEST_BEARER.lock().unwrap().take();
+    remove_request_header(AUTHORIZATION);
 }
 
-pub fn remove_request_header(name: &str) {
-    REQUEST_HEADERS.lock().unwrap().remove(name);
+pub fn remove_request_header(name: HeaderName) {
+    let mut headers = get_request_headers();
+
+    headers.remove(name);
+
+    set_request_headers(headers);
 }
 
 pub fn set_request_bearer(token: &str) {
-    let mut headers = get_request_headers();
-
-    headers.insert(AUTHORIZATION, format!("Bearer {}", token).parse().unwrap());
-
-    set_request_headers(headers);
-
-    REQUEST_BEARER.lock().unwrap().replace(token.to_owned());
+    set_request_header(AUTHORIZATION, format!("Bearer {}", token).parse().unwrap());
 }
 
-pub fn set_request_header(name: &str, value: &str) {
-    REQUEST_HEADERS
-        .lock()
-        .unwrap()
-        .insert(name.to_owned(), value.to_owned());
+pub fn set_request_header(name: HeaderName, value: HeaderValue) {
+    let mut headers = get_request_headers();
+
+    headers.insert(name, value);
+
+    set_request_headers(headers);
 }
 
 fn request_url(path: &str) -> String {

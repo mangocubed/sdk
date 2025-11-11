@@ -131,18 +131,13 @@ impl<T> From<Error> for ServFnError<T> {
 pub fn launch(app: fn() -> Element) {
     #[cfg(not(feature = "server"))]
     {
-        use dioxus::fullstack::{get_request_headers, set_request_headers};
-
+        use crate::app::request::set_request_header;
         use crate::constants::X_APP_TOKEN;
 
         #[cfg(not(feature = "web"))]
         dioxus::fullstack::set_server_url(env!("APP_SERVER_URL"));
 
-        let mut headers = get_request_headers();
-
-        headers.insert(X_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
-
-        set_request_headers(headers);
+        set_request_header(X_APP_TOKEN, env!("APP_TOKEN").parse().unwrap());
     }
 
     dioxus::launch(app)
