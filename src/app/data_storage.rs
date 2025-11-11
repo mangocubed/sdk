@@ -1,6 +1,8 @@
 #[cfg(feature = "desktop")]
 use std::sync::OnceLock;
 
+use serde::{Deserialize, Serialize};
+
 #[cfg(any(feature = "desktop", feature = "mobile"))]
 use serde_json::Value;
 
@@ -25,9 +27,9 @@ pub trait DataStorage {
 
     fn delete(&self, key: &str);
 
-    fn get(&self, key: &str) -> Option<String>;
+    fn get<T: for<'de> Deserialize<'de>>(&self, key: &str) -> Option<T>;
 
-    fn set(&self, key: &str, value: &str);
+    fn set<T: Serialize>(&self, key: &str, value: &T);
 }
 
 #[cfg(feature = "web")]
@@ -50,12 +52,16 @@ impl DataStorage for DataWebStorage {
         let _ = self.0.delete(key);
     }
 
-    fn get(&self, key: &str) -> Option<String> {
-        self.0.get(key).ok().flatten()
+    fn get<T: for<'de> Deserialize<'de>>(&self, key: &str) -> Option<T> {
+        self.0
+            .get(key)
+            .ok()
+            .flatten()
+            .and_then(|value| serde_json::from_str(&value).ok())
     }
 
-    fn set(&self, key: &str, value: &str) {
-        let _ = self.0.set(key, value);
+    fn set<T: Serialize>(&self, key: &str, value: &T) {
+        let _ = self.0.set(key, &serde_json::to_string(value).unwrap());
     }
 }
 
@@ -140,18 +146,18 @@ impl DataStorage for DataFileStorage {
         self.write_data_file(json_data);
     }
 
-    fn get(&self, key: &str) -> Option<String> {
+    fn get<T: for<'de> Deserialize<'de>>(&self, key: &str) -> Option<T> {
         let json_data = self.read_data_file();
 
         json_data
             .get(key)
-            .and_then(|value| value.as_str().map(|value| value.to_owned()))
+            .and_then(|value| serde_json::from_value(value.clone()).ok())
     }
 
-    fn set(&self, key: &str, value: &str) {
+    fn set<T: Serialize>(&self, key: &str, value: &T) {
         let mut json_data = self.read_data_file();
 
-        json_data[key] = Value::String(value.to_owned());
+        json_data[key] = serde_json::to_value(value).unwrap();
 
         self.write_data_file(json_data);
     }
@@ -162,11 +168,11 @@ impl DataStorage for () {
 
     fn delete(&self, _key: &str) {}
 
-    fn get(&self, _key: &str) -> Option<String> {
+    fn get<T: for<'de> Deserialize<'de>>(&self, _key: &str) -> Option<T> {
         None
     }
 
-    fn set(&self, _key: &str, _value: &str) {}
+    fn set<T: Serialize>(&self, _key: &str, _value: &T) {}
 }
 
 pub fn data_storage() -> impl DataStorage {
