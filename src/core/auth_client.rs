@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::sync::OnceLock;
 
 use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -7,6 +8,9 @@ use uuid::Uuid;
 
 use super::config::AUTH_CLIENT_CONFIG;
 
+static AUTH_CLIENT: OnceLock<AuthClient> = OnceLock::new();
+
+#[derive(Clone)]
 pub struct AuthClient<'a> {
     id: Uuid,
     secret: Cow<'a, str>,
@@ -77,7 +81,7 @@ impl<'a> AuthClient<'a> {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Auth<'a> {
     pub token: Cow<'a, str>,
     pub expires_at: DateTime<Utc>,
@@ -113,6 +117,6 @@ pub struct UserInfo<'a> {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-pub fn auth_client<'a>() -> AuthClient<'a> {
-    AuthClient::default()
+pub fn auth_client<'a>() -> &'a AuthClient<'a> {
+    AUTH_CLIENT.get_or_init(AuthClient::default)
 }
