@@ -24,8 +24,7 @@ impl FormProvider {
 
     pub(crate) fn field_error_message(&self, id: &str) -> Option<String> {
         self.error()
-            .and_then(|error| error.details)
-            .and_then(|validation_errors| validation_errors.field_errors().get(id).cloned().cloned())
+            .and_then(|error| error.details.field_errors().get(id).cloned().cloned())
             .and_then(|field_errors| {
                 field_errors
                     .iter()

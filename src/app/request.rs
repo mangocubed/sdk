@@ -13,9 +13,6 @@ use gloo_net::http::{Method, RequestBuilder};
 #[cfg(not(target_family = "wasm"))]
 use reqwest::{Error, Method, RequestBuilder};
 
-#[cfg(target_family = "wasm")]
-use crate::constants::HEADER_AUTHORIZATION;
-
 pub struct Request {
     builder: RequestBuilder,
     json: Option<Value>,
