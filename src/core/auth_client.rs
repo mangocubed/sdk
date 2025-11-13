@@ -118,5 +118,5 @@ pub struct UserInfo<'a> {
 }
 
 pub fn auth_client<'a>() -> &'a AuthClient<'a> {
-    AUTH_CLIENT.get_or_init(|| AuthClient::default())
+    AUTH_CLIENT.get_or_init(AuthClient::default)
 }
