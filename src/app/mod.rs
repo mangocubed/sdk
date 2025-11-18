@@ -18,6 +18,7 @@ pub mod hooks;
 pub mod icons;
 mod request;
 pub mod serv_fn;
+pub mod storage;
 
 #[cfg(feature = "server")]
 pub mod server;
