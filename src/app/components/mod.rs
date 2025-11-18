@@ -5,40 +5,13 @@ use dioxus::prelude::*;
 
 use super::icons::Mango3Icon;
 
+mod app_provider;
 mod form;
 mod logo;
 
+pub use app_provider::*;
 pub use form::*;
 pub use logo::*;
-
-#[derive(Clone)]
-struct AppTitle(String);
-
-#[component]
-pub fn AppProvider(children: Element, #[props(optional)] is_starting: ReadSignal<bool>) -> Element {
-    let mut app_title = env!("APP_TITLE").to_owned();
-
-    if cfg!(debug_assertions) {
-        app_title += " (dev)";
-    }
-
-    use_context_provider(|| AppTitle(app_title.clone()));
-
-    rsx! {
-        {children}
-
-        Spinner {}
-
-        div { class: "splash", class: if !is_starting() { "splash-hidden" },
-            figure {
-                div { class: "splash-pulse" }
-
-                Mango3Icon {}
-            }
-        }
-
-    }
-}
 
 #[component]
 pub fn Brand(children: Element) -> Element {
@@ -127,15 +100,6 @@ pub fn H2(children: Element) -> Element {
 pub fn H3(children: Element) -> Element {
     rsx! {
         h3 { class: "h3", {children} }
-    }
-}
-
-#[component]
-fn Spinner() -> Element {
-    use super::spinner_is_active;
-
-    rsx! {
-        div { class: "spinner", class: if !spinner_is_active() { "hidden" } }
     }
 }
 
