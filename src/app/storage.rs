@@ -2,10 +2,11 @@ pub use dioxus_sdk::storage::{LocalStorage, SessionStorage, StorageBacking};
 
 #[cfg(any(feature = "desktop", feature = "mobile"))]
 pub fn set_directory(app_name: &str) {
-    #[cfg(feature = "desktop")]
+    #[cfg(any(feature = "desktop", all(feature = "mobile", not(target_os = "ios"))))]
     let storage_dir = directories::ProjectDirs::from("app", "mango3", app_name)
         .expect("Could not get project dirs")
-        .config_local_dir();
+        .config_local_dir()
+        .to_path_buf();
 
     #[cfg(all(feature = "mobile", target_os = "android"))]
     let storage_dir = {
