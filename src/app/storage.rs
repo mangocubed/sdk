@@ -1,36 +1,39 @@
-use dioxus::prelude::{Memo, Signal, use_memo, use_reactive};
-use dioxus_sdk::storage::{LocalStorage, SessionStorage, get_from_storage, use_storage, use_synced_storage};
-use serde::Serialize;
-use serde::de::DeserializeOwned;
+pub use dioxus_sdk::storage::{LocalStorage, SessionStorage, StorageBacking};
 
-#[cfg(target_family = "wasm")]
-use web_sys::window;
+#[cfg(any(feature = "desktop", feature = "mobile"))]
+pub fn set_directory(app_name: &str) {
+    #[cfg(feature = "desktop")]
+    let storage_dir = directories::ProjectDirs::from("app", "mango3", app_name)
+        .expect("Could not get project dirs")
+        .config_local_dir();
 
-pub fn use_storage_is_enabled() -> Memo<bool> {
-    #[cfg(feature = "server")]
-    let is_enabled = false;
-    #[cfg(all(not(feature = "server"), target_family = "wasm"))]
-    let is_enabled = window().is_some();
-    #[cfg(all(not(feature = "server"), not(target_family = "wasm")))]
-    let is_enabled = true;
+    #[cfg(all(feature = "mobile", target_os = "android"))]
+    let storage_dir = {
+        use std::{path, sync};
 
-    use_memo(use_reactive!(|is_enabled| { is_enabled }))
+        use jni::JNIEnv;
+        use jni::objects::{JObject, JString};
+
+        let (tx, rx) = sync::mpsc::channel();
+
+        fn run(env: &mut JNIEnv<'_>, activity: &JObject<'_>) -> Result<path::PathBuf, jni::errors::Error> {
+            let files_dir = env.call_method(activity, "getFilesDir", "()Ljava/io/File;", &[])?.l()?;
+            let files_dir: JString<'_> = env
+                .call_method(files_dir, "getAbsolutePath", "()Ljava/lang/String;", &[])?
+                .l()?
+                .into();
+            let files_dir: String = env.get_string(&files_dir)?.into();
+
+            Ok(path::PathBuf::from(files_dir))
+        }
+
+        dioxus::mobile::wry::prelude::dispatch(move |env, activity, _webview| tx.send(run(env, activity)).unwrap());
+
+        rx.recv().unwrap().unwrap()
+    };
+
+    dioxus_sdk::storage::set_directory(storage_dir);
 }
 
-pub fn get_from_local_storage<T: Clone + DeserializeOwned + PartialEq + Send + Serialize + Sync + 'static>(
-    key: &str,
-) -> Option<T> {
-    get_from_storage::<LocalStorage, Option<T>>(key.to_owned(), || None)
-}
-
-pub fn use_local_storage<T: Clone + DeserializeOwned + PartialEq + Send + Serialize + Sync + 'static>(
-    key: &str,
-) -> Signal<Option<T>> {
-    use_synced_storage::<LocalStorage, Option<T>>(key.to_owned(), || None)
-}
-
-pub fn use_session_storage<T: Clone + DeserializeOwned + PartialEq + Send + Serialize + Sync + 'static>(
-    key: &str,
-) -> Signal<Option<T>> {
-    use_storage::<SessionStorage, Option<T>>(key.to_owned(), || None)
-}
+#[cfg(any(feature = "web", feature = "server"))]
+pub fn set_directory(_app_name: &str) {}

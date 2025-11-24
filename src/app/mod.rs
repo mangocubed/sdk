@@ -13,7 +13,6 @@ use reqwest::Error;
 use crate::core::config::AUTH_CLIENT_CONFIG;
 
 pub mod components;
-mod data_storage;
 pub mod hooks;
 pub mod icons;
 mod request;
@@ -23,7 +22,6 @@ pub mod storage;
 #[cfg(feature = "server")]
 pub mod server;
 
-pub use data_storage::*;
 pub use request::*;
 pub use serv_fn::*;
 
