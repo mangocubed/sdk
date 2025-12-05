@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::time::Duration;
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -131,4 +132,14 @@ pub fn auth_client_authorize_url() -> url::Url {
     url.set_query(Some(&format!("client_id={}", env!("AUTH_CLIENT_ID"))));
 
     url
+}
+
+pub async fn sleep(millis: u64) {
+    let duration = Duration::from_millis(millis);
+
+    #[cfg(not(target_family = "wasm"))]
+    tokio::time::sleep(duration).await;
+
+    #[cfg(target_family = "wasm")]
+    gloo_timers::future::sleep(duration).await;
 }
