@@ -9,6 +9,7 @@ repository = "https://github.com/mangocubed/sdk"
 anyhow = { version = "1.0", optional = true }
 axum = { version = "0.8", optional = true }
 axum-extra = { version = "0.12", features = ["typed-header"], optional = true }
+base64 = { version = "0.22", optional = true }
 chrono = { version = "0.4", features = ["serde"], optional = true }
 dioxus = { version = "0.7", optional = true, features = [
     "fullstack",
@@ -18,10 +19,12 @@ dioxus-sdk = { version = "0.7", features = ["storage"], optional = true }
 fake = { version = "4.4", features = ["chrono"], optional = true }
 figment = { version = "0.10", features = ["env", "toml"], optional = true }
 headers = { version = "0.4", optional = true }
+hmac = { version = "0.12", optional = true }
 http = { version = "1.4", optional = true }
 rand = { version = "0.9", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
+sha2 = { version = "0.10", optional = true }
 tokio = { version = "1.48", optional = true }
 tower-http = { version = "0.6", features = ["cors", "trace"], optional = true }
 url = { version = "2.5", optional = true }
@@ -60,6 +63,6 @@ web = ["dep:web-sys", "dioxus/web", "app"]
 desktop = ["dep:directories", "dioxus/desktop", "app"]
 mobile = ["dep:directories", "dep:jni", "dioxus/mobile", "app"]
 server = ["dep:axum", "dep:headers", "dep:tokio", "dep:tower-http", "core"]
-auth-client = []
+auth-client = ["dep:base64", "dep:hmac", "dep:http", "dep:sha2"]
 build = []
 test-utils = ["dep:fake", "uuid/v4", "auth-client", "core"]

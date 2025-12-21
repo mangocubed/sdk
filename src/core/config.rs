@@ -55,6 +55,7 @@ pub(crate) struct AuthClientConfig {
     pub secret: String,
     provider_api_url: String,
     provider_app_url: String,
+    pub webhook_secret: Option<String>,
 }
 
 #[cfg(feature = "auth-client")]
@@ -65,6 +66,7 @@ impl Default for AuthClientConfig {
             secret: "".to_owned(),
             provider_api_url: "http://127.0.0.1:8082".to_owned(),
             provider_app_url: "http://127.0.0.1:8080".to_owned(),
+            webhook_secret: None,
         }
     }
 }
