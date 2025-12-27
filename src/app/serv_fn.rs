@@ -8,6 +8,17 @@ use validator::ValidationErrors;
 
 #[cfg(feature = "server")]
 use dioxus::fullstack::AsStatusCode;
+#[cfg(feature = "server")]
+use headers::authorization::{Bearer, Credentials};
+#[cfg(feature = "server")]
+use http::HeaderMap;
+#[cfg(feature = "server")]
+use http::header::AUTHORIZATION;
+
+#[cfg(feature = "server")]
+use crate::constants::HEADER_APP_TOKEN;
+#[cfg(feature = "server")]
+use crate::core::config::APP_CONFIG;
 
 pub type ActionResult = Result<ActionSuccess, ActionError>;
 
@@ -99,5 +110,35 @@ impl ActionSuccess {
 
     pub fn ok(message: &str, data: Value) -> ActionResult {
         Ok(Self::new(message, data))
+    }
+}
+
+#[cfg(feature = "server")]
+pub trait HeaderMapExt {
+    fn bearer(&self) -> ServFnResult<Bearer>;
+
+    fn require_app_token(&self) -> ServFnResult;
+}
+
+#[cfg(feature = "server")]
+impl HeaderMapExt for HeaderMap {
+    fn bearer(&self) -> ServFnResult<Bearer> {
+        let value = self.get(AUTHORIZATION).or_unauthorized("Unauthorized")?;
+
+        Bearer::decode(value).or_unauthorized("Unauthorized")
+    }
+
+    fn require_app_token(&self) -> ServFnResult {
+        let app_token = self
+            .get(HEADER_APP_TOKEN)
+            .and_then(|value| value.to_str().ok())
+            .or_forbidden("Forbidden")?
+            .to_owned();
+
+        if app_token == APP_CONFIG.token || APP_CONFIG.old_tokens.contains(&app_token) {
+            Ok(())
+        } else {
+            HttpError::forbidden("Forbidden")
+        }
     }
 }

@@ -1,14 +1,13 @@
 use std::collections::HashMap;
+use std::io::Error;
 use std::time::Duration;
 
+use dioxus::fullstack::{get_request_headers, set_request_headers};
 use dioxus::prelude::*;
+use http::header::AUTHORIZATION;
+use http::{HeaderName, HeaderValue};
 use serde::{Deserialize, Serialize};
 use validator::ValidationErrors;
-
-#[cfg(target_family = "wasm")]
-use gloo_net::Error;
-#[cfg(not(target_family = "wasm"))]
-use reqwest::Error;
 
 #[cfg(all(feature = "auth-client", feature = "server"))]
 use crate::core::config::AUTH_CLIENT_CONFIG;
@@ -16,18 +15,10 @@ use crate::core::config::AUTH_CLIENT_CONFIG;
 pub mod components;
 pub mod hooks;
 pub mod icons;
-mod request;
 pub mod serv_fn;
 pub mod storage;
 
-#[cfg(feature = "server")]
-pub mod server;
-
-pub use request::*;
 pub use serv_fn::*;
-
-#[cfg(feature = "server")]
-pub use server::*;
 
 static SPINNER_UNITS: GlobalSignal<HashMap<String, bool>> = GlobalSignal::new(HashMap::new);
 
@@ -59,10 +50,41 @@ impl<T> From<Error> for ServFnError<T> {
     }
 }
 
+pub fn get_request_bearer() -> Option<String> {
+    get_request_headers()
+        .get(AUTHORIZATION)
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "))
+        .map(|value| value.to_owned())
+}
+
+pub fn remove_request_bearer() {
+    remove_request_header(AUTHORIZATION);
+}
+
+pub fn remove_request_header(name: HeaderName) {
+    let mut headers = get_request_headers();
+
+    headers.remove(name);
+
+    set_request_headers(headers);
+}
+
+pub fn set_request_bearer(token: &str) {
+    set_request_header(AUTHORIZATION, format!("Bearer {}", token).parse().unwrap());
+}
+
+pub fn set_request_header(name: HeaderName, value: HeaderValue) {
+    let mut headers = get_request_headers();
+
+    headers.insert(name, value);
+
+    set_request_headers(headers);
+}
+
 pub fn launch(app: fn() -> Element) {
     #[cfg(not(feature = "server"))]
     {
-        use crate::app::request::set_request_header;
         use crate::constants::X_APP_TOKEN;
 
         #[cfg(not(feature = "web"))]

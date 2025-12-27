@@ -3,6 +3,8 @@ use std::sync::LazyLock;
 use figment::Figment;
 use figment::providers::{Env, Serialized};
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "auth-client")]
 use url::Url;
 
 pub fn extract_config_from_env<'a, T>(prefix: &str) -> T
@@ -23,26 +25,18 @@ pub(crate) static AUTH_CLIENT_CONFIG: LazyLock<AuthClientConfig> =
 
 #[derive(Deserialize, Serialize)]
 pub struct AppConfig {
-    pub request_address: String,
-    request_url: String,
+    server_url: String,
     title: String,
     pub token: String,
     pub old_tokens: Vec<String>,
 }
 
-impl AppConfig {
-    pub fn request_url(&self) -> Url {
-        self.request_url.parse().expect("Could not parse request URL")
-    }
-}
-
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            request_address: "127.0.0.1:8081".to_owned(),
-            request_url: "http://127.0.0.1:8081".to_owned(),
+            server_url: String::new(),
             title: "Mango³".to_owned(),
-            token: "".to_owned(),
+            token: String::new(),
             old_tokens: Vec::new(),
         }
     }
