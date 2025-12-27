@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use std::sync::LazyLock;
 
 #[cfg(feature = "server")]
-use reqwest::StatusCode;
+use http::StatusCode;
 #[cfg(feature = "core")]
 use validator::ValidationError;
 
