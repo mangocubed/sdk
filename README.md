@@ -5,19 +5,19 @@
 Run the following Cargo command in your Dioxus project directory:
 
 ```bash
-cargo add --git https://github.com/mangocubed/sdk.git --tag v0.0.0-alpha.25
+cargo add --git https://github.com/mangocubed/sdk.git --tag v0.0.0-alpha.26
 ```
 
 Or add the following line to your `Cargo.toml` dependencies:
 
 ```toml
-mango3-sdk = { git = "https://github.com/mangocubed/sdk.git", tag = "v0.0.0-alpha.25" }
+mango3-sdk = { git = "https://github.com/mangocubed/sdk.git", tag = "v0.0.0-alpha.26" }
 ```
 
 Then, run the following NPM command in your Dioxus project directory:
 
 ```bash
-npm install github:mangocubed/sdk#v0.0.0-alpha.25
+npm install github:mangocubed/sdk#v0.0.0-alpha.26
 ```
 
 Or add the following line to your `package.json` dependencies:
@@ -27,7 +27,7 @@ Or add the following line to your `package.json` dependencies:
     // ...
     "dependencies": {
         // ...
-        "sdk": "github:mangocubed/sdk#v0.0.0-alpha.25"
+        "sdk": "github:mangocubed/sdk#v0.0.0-alpha.26"
     }
 }
 ```
