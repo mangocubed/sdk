@@ -360,7 +360,7 @@ pub fn PhotoMini() -> Element {
 }
 
 #[component]
-pub fn UserOutlined(#[props(default = "size-6".to_owned())] class: String) -> Element {
+pub fn UserOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
     rsx! {
         svg {
             class,
