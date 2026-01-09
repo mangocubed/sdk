@@ -7,6 +7,7 @@ repository = "https://github.com/mangocubed/sdk"
 
 [dependencies]
 anyhow = { version = "1.0", optional = true }
+apalis = { version = "0.7", optional = true }
 axum = { version = "0.8", optional = true }
 axum-extra = { version = "0.12", features = ["typed-header"], optional = true }
 base64 = { version = "0.22", optional = true }
@@ -56,6 +57,7 @@ core = [
     "dep:uuid",
     "dep:validator",
 ]
+monitor = ["dep:apalis"]
 app = ["dep:dioxus", "dep:dioxus-sdk", "dep:http", "dep:url", "dep:validator"]
 web = ["dep:web-sys", "dioxus/web", "app"]
 desktop = ["dep:directories", "dioxus/desktop", "app"]

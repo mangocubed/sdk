@@ -2,6 +2,8 @@
 pub mod app;
 #[cfg(feature = "core")]
 pub mod core;
+#[cfg(feature = "monitor")]
+pub mod monitor;
 
 pub mod constants;
 
