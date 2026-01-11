@@ -46,6 +46,10 @@ directories = { version = "6.0", optional = true }
 [target.'cfg(target_os = "android")'.dependencies]
 jni = { version = "0.21", default-features = false, optional = true }
 
+[patch.crates-io]
+zbus = { git = "https://github.com/dbus2/zbus", tag = "zbus-5.12.0" }
+zvariant = { git = "https://github.com/dbus2/zbus", tag = "zvariant-5.8.0" }
+
 [features]
 default = []
 core = [
