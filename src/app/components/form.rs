@@ -64,9 +64,14 @@ pub fn Form(children: Element, #[props(optional)] on_success: Callback<Value>) -
 }
 
 #[component]
-fn FormField(children: Element, error: Memo<Option<String>>, #[props(optional)] label: String) -> Element {
+fn FormField(
+    children: Element,
+    #[props(into, optional)] disabled: Signal<bool>,
+    error: Memo<Option<String>>,
+    #[props(optional)] label: String,
+) -> Element {
     rsx! {
-        fieldset { class: "fieldset",
+        fieldset { class: "fieldset", disabled,
             legend { class: "fieldset-legend empty:hidden", {label} }
 
             {children}
@@ -112,28 +117,42 @@ pub fn FormSuccessModal(#[props(optional)] on_close: Callback<Value>) -> Element
 }
 
 #[component]
-pub fn PasswordField(id: String, label: String, #[props(default = 256)] max_length: u16, name: String) -> Element {
+pub fn PasswordField(
+    #[props(into, optional)] disabled: Signal<bool>,
+    id: String,
+    label: String,
+    #[props(default = 256)] max_length: u16,
+    name: String,
+    #[props(into, optional)] readonly: Signal<bool>,
+) -> Element {
     let error = use_field_error_message(id.clone());
     let mut input_type = use_signal(|| "password");
 
     rsx! {
-        FormField { error, label,
+        FormField { disabled, error, label,
             div {
                 class: "input flex items-center gap-2 pr-0",
                 class: if error().is_some() { "input-error" },
                 input {
                     class: "grow",
+                    disabled,
                     id,
                     maxlength: max_length,
                     name,
                     onkeydown: on_keydown,
+                    readonly,
                     r#type: input_type,
                 }
 
                 button {
                     class: "btn btn-ghost btn-sm",
+                    disabled,
                     onclick: move |event| {
                         event.prevent_default();
+
+                        if *readonly.read() {
+                            return;
+                        }
 
                         *input_type.write() = if input_type() == "password" {
                             "text"
@@ -153,14 +172,21 @@ pub fn PasswordField(id: String, label: String, #[props(default = 256)] max_leng
 }
 
 #[component]
-pub fn SelectField(id: String, label: String, name: String, children: Element) -> Element {
+pub fn SelectField(
+    children: Element,
+    #[props(into, optional)] disabled: Signal<bool>,
+    id: String,
+    label: String,
+    name: String,
+) -> Element {
     let error = use_field_error_message(id.clone());
 
     rsx! {
-        FormField { error, label,
+        FormField { disabled, error, label,
             select {
                 class: "select",
                 class: if error().is_some() { "select-error" },
+                disabled,
                 id,
                 name,
                 {children}
@@ -171,20 +197,23 @@ pub fn SelectField(id: String, label: String, name: String, children: Element) -
 
 #[component]
 pub fn TextField(
+    #[props(into, optional)] disabled: Signal<bool>,
     id: String,
     #[props(default = "text".to_owned())] input_type: String,
     label: String,
     #[props(default = 256)] max_length: u16,
     name: String,
+    #[props(into, optional)] readonly: Signal<bool>,
     #[props(into, optional)] value: Signal<String>,
 ) -> Element {
     let error = use_field_error_message(id.clone());
 
     rsx! {
-        FormField { error, label,
+        FormField { disabled, error, label,
             input {
                 class: "input",
                 class: if error().is_some() { "input-error" },
+                disabled,
                 id,
                 maxlength: max_length,
                 name,
@@ -192,6 +221,7 @@ pub fn TextField(
                 oninput: move |event| {
                     *value.write() = event.value();
                 },
+                readonly,
                 r#type: input_type,
                 value,
             }
@@ -201,9 +231,11 @@ pub fn TextField(
 
 #[component]
 pub fn ToggleField(
+    #[props(into, optional)] disabled: Signal<bool>,
     id: String,
     label: String,
     name: String,
+    #[props(into, optional)] readonly: Signal<bool>,
     #[props(into, optional)] checked: ReadSignal<bool>,
     #[props(default = "false".to_owned())] unchecked_value: String,
     #[props(default = "true".to_owned())] checked_value: String,
@@ -211,11 +243,13 @@ pub fn ToggleField(
     let error = use_field_error_message(id.clone());
 
     rsx! {
-        FormField { error,
+        FormField { disabled, error,
             if !checked() {
                 input {
+                    disabled,
                     r#type: "hidden",
                     name: name.clone(),
+                    readonly,
                     value: unchecked_value,
                 }
             }
@@ -227,8 +261,10 @@ pub fn ToggleField(
                     checked,
                     class: "toggle",
                     class: if error().is_some() { "toggle-error" },
+                    disabled,
                     id,
                     name,
+                    readonly,
                     r#type: "checkbox",
                     value: checked_value,
                 }
