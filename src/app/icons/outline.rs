@@ -1,0 +1,388 @@
+use dioxus::prelude::*;
+
+#[component]
+pub fn ArrowDownTrayOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ArrowUpTrayOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn CheckCircleOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ClipboardDocumentListOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn CloudOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn CutOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m7.848 8.25 1.536.887M7.848 8.25a3 3 0 1 1-5.196-3 3 3 0 0 1 5.196 3Zm1.536.887a2.165 2.165 0 0 1 1.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 1 1-5.196 3 3 3 0 0 1 5.196-3Zm1.536-.887a2.165 2.165 0 0 0 1.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863 2.077-1.199m0-3.328a4.323 4.323 0 0 1 2.068-1.379l5.325-1.628a4.5 4.5 0 0 1 2.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.33 4.33 0 0 0 10.607 12m3.736 0 7.794 4.5-.802.215a4.5 4.5 0 0 1-2.48-.043l-5.326-1.629a4.324 4.324 0 0 1-2.068-1.379M14.343 12l-2.882 1.664",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn DocumentOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn EllipsisVerticalOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn EnvelopeOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ExclamationTriangleOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn FolderPlusOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn EyeOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+            path {
+                d: "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn FolderOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn HomeOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn InformationCircleOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn MoveOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M 12.000002,3.5436 9.6937105,5.8498915 M 12.000002,3.5436 14.306294,5.8498915 M 3.5436,12.000002 5.8498915,9.6937107 M 3.5436,12.000002 5.8498915,14.306294 M 20.456404,12.000002 18.150113,9.6937107 m 2.306291,2.3062913 -2.306291,2.306292 m 2.306291,-2.306292 h -8.456402 l -8.456402,0 m 8.456402,8.456403 -2.3062915,-2.306292 m 2.3062915,2.306292 2.306292,-2.306292 m -2.306292,2.306292 v -8.456403 l 0,-8.456402",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+                style: "stroke-width:1.0872",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PasswordOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m 8.625,11.75 c 0,0.5 -0.75,0.5 -0.75,0 0,-0.5 0.75,-0.5 0.75,0 z m 0,0 H 8.25 m 4.125,0 c 0,0.5 -0.75,0.5 -0.75,0 0,-0.5 0.75,-0.5 0.75,0 z m 0,0 H 12 m 4.125,0 c 0,0.5 -0.75,0.5 -0.75,0 0,-0.5 0.75,-0.5 0.75,0 z m 0,0 H 15.75 m -13.5,3.01 c 0,1.6 1.123,2.994 2.707,3.227 1.7906524,0.02796 14.048214,0.02594 14.085,0 1.585,-0.233 2.708,-1.626 2.708,-3.228 V 8.741 c 0,-1.602 -1.123,-2.995 -2.707,-3.228 -0.06893,0.00145 -14.086,0 -14.086,0 C 3.373,5.746 2.25,7.14 2.25,8.741 v 6.018 z",
+                id: "path1",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PencilOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn TrashOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
+pub fn UserOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
