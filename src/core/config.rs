@@ -4,7 +4,7 @@ use figment::Figment;
 use figment::providers::{Env, Serialized};
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "auth-client")]
+#[cfg(feature = "identity-client")]
 use url::Url;
 
 pub fn extract_config_from_env<'a, T>(prefix: &str) -> T
@@ -19,9 +19,9 @@ where
 
 pub static APP_CONFIG: LazyLock<AppConfig> = LazyLock::new(|| extract_config_from_env("APP_"));
 
-#[cfg(feature = "auth-client")]
-pub(crate) static AUTH_CLIENT_CONFIG: LazyLock<AuthClientConfig> =
-    LazyLock::new(|| extract_config_from_env("AUTH_CLIENT_"));
+#[cfg(feature = "identity-client")]
+pub(crate) static IDENTITY_CLIENT_CONFIG: LazyLock<IdentityClientConfig> =
+    LazyLock::new(|| extract_config_from_env("IDENTITY_CLIENT_"));
 
 #[derive(Deserialize, Serialize)]
 pub struct AppConfig {
@@ -42,9 +42,9 @@ impl Default for AppConfig {
     }
 }
 
-#[cfg(feature = "auth-client")]
+#[cfg(feature = "identity-client")]
 #[derive(Deserialize, Serialize)]
-pub(crate) struct AuthClientConfig {
+pub(crate) struct IdentityClientConfig {
     id: String,
     pub secret: String,
     provider_api_url: String,
@@ -52,8 +52,8 @@ pub(crate) struct AuthClientConfig {
     pub webhook_secret: Option<String>,
 }
 
-#[cfg(feature = "auth-client")]
-impl Default for AuthClientConfig {
+#[cfg(feature = "identity-client")]
+impl Default for IdentityClientConfig {
     fn default() -> Self {
         Self {
             id: "".to_owned(),
@@ -65,8 +65,8 @@ impl Default for AuthClientConfig {
     }
 }
 
-#[cfg(feature = "auth-client")]
-impl AuthClientConfig {
+#[cfg(feature = "identity-client")]
+impl IdentityClientConfig {
     pub fn id(&self) -> uuid::Uuid {
         self.id.parse().expect("Could not parse Auth client ID")
     }

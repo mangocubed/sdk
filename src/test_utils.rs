@@ -13,8 +13,8 @@ use fake::faker::name::en::Name;
 use rand::rng;
 use uuid::Uuid;
 
-use crate::core::auth_client::Auth;
 use crate::core::generate_random_string;
+use crate::core::identity_client::Auth;
 
 fn unique_fake<T, F>(prefix: &str, fake_fn: F) -> T
 where

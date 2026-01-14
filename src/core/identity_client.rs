@@ -9,32 +9,32 @@ use sha2::Sha256;
 use url::Url;
 use uuid::Uuid;
 
-use super::config::AUTH_CLIENT_CONFIG;
+use super::config::IDENTITY_CLIENT_CONFIG;
 
-static AUTH_CLIENT: OnceLock<AuthClient> = OnceLock::new();
+static IDENTITY_CLIENT: OnceLock<IdentityClient> = OnceLock::new();
 
 #[derive(Clone)]
-pub struct AuthClient<'a> {
+pub struct IdentityClient<'a> {
     id: Uuid,
     secret: Cow<'a, str>,
     webhook_secret: Option<Cow<'a, str>>,
     provider_api_url: Url,
 }
 
-impl<'a> Default for AuthClient<'a> {
+impl<'a> Default for IdentityClient<'a> {
     fn default() -> Self {
         Self {
-            id: AUTH_CLIENT_CONFIG.id(),
-            secret: Cow::Owned(AUTH_CLIENT_CONFIG.secret.clone()),
-            webhook_secret: AUTH_CLIENT_CONFIG.webhook_secret.clone().map(Cow::Owned),
-            provider_api_url: AUTH_CLIENT_CONFIG.provider_api_url(),
+            id: IDENTITY_CLIENT_CONFIG.id(),
+            secret: Cow::Owned(IDENTITY_CLIENT_CONFIG.secret.clone()),
+            webhook_secret: IDENTITY_CLIENT_CONFIG.webhook_secret.clone().map(Cow::Owned),
+            provider_api_url: IDENTITY_CLIENT_CONFIG.provider_api_url(),
         }
     }
 }
 
-impl<'a> AuthClient<'a> {
+impl<'a> IdentityClient<'a> {
     pub fn new() -> &'a Self {
-        AUTH_CLIENT.get_or_init(AuthClient::default)
+        IDENTITY_CLIENT.get_or_init(IdentityClient::default)
     }
 
     fn auth_body(&self, auth: &Auth<'_>) -> serde_json::Value {
@@ -146,19 +146,19 @@ impl<'a> Auth<'a> {
     }
 
     pub async fn refresh(&self) -> anyhow::Result<Self> {
-        AuthClient::new().refresh_auth(self).await
+        IdentityClient::new().refresh_auth(self).await
     }
 
     pub async fn revoke(&self) -> anyhow::Result<()> {
-        AuthClient::new().revoke_auth(self).await
+        IdentityClient::new().revoke_auth(self).await
     }
 
     pub async fn verify(&self) -> anyhow::Result<bool> {
-        AuthClient::new().verify_auth(self).await
+        IdentityClient::new().verify_auth(self).await
     }
 
     pub async fn user_info(&self) -> anyhow::Result<UserInfo<'a>> {
-        AuthClient::new().user_info(self).await
+        IdentityClient::new().user_info(self).await
     }
 }
 

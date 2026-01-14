@@ -32,9 +32,9 @@ jobs:
                   cargo clippy --features desktop -- -D warnings || failed
                   cargo clippy --features mobile -- -D warnings || failed
                   cargo clippy --features server -- -D warnings || failed
-                  cargo clippy --features auth-client -- -D warnings || failed
-                  cargo clippy --features auth-client,build -- -D warnings || failed
-                  cargo clippy --features auth-client,core -- -D warnings || failed
+                  cargo clippy --features identity-client -- -D warnings || failed
+                  cargo clippy --features identity-client,build -- -D warnings || failed
+                  cargo clippy --features identity-client,core -- -D warnings || failed
                   cargo clippy --features build -- -D warnings || failed
                   cargo clippy --features test-utils -- -D warnings || failed
             - name: Check with cargo-fmt
