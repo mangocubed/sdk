@@ -1,4 +1,4 @@
-#[cfg(any(feature = "app", feature = "auth-client"))]
+#[cfg(any(feature = "app", feature = "identity-client"))]
 use http::HeaderName;
 #[cfg(feature = "core")]
 use std::borrow::Cow;
@@ -48,5 +48,5 @@ pub const RESPONSE_INTERNAL_SERVER_ERROR: (StatusCode, &str) =
 
 #[cfg(feature = "app")]
 pub const X_APP_TOKEN: HeaderName = HeaderName::from_static("x-app-token");
-#[cfg(feature = "auth-client")]
+#[cfg(feature = "identity-client")]
 pub const X_WEBHOOK_SIGNATURE: HeaderName = HeaderName::from_static("x-webhook-signature");

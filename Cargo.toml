@@ -76,6 +76,12 @@ server = [
     "dep:tower-http",
     "core",
 ]
-auth-client = ["dep:base64", "dep:hmac", "dep:http", "dep:reqwest", "dep:sha2"]
+identity-client = [
+    "dep:base64",
+    "dep:hmac",
+    "dep:http",
+    "dep:reqwest",
+    "dep:sha2",
+]
 build = []
-test-utils = ["dep:fake", "uuid/v4", "auth-client", "core"]
+test-utils = ["dep:fake", "uuid/v4", "identity-client", "core"]

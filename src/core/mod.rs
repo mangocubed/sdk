@@ -3,8 +3,8 @@ use rand::{Rng, rng};
 
 pub mod config;
 
-#[cfg(feature = "auth-client")]
-pub mod auth_client;
+#[cfg(feature = "identity-client")]
+pub mod identity_client;
 
 pub fn generate_random_string(length: u8) -> String {
     rng()

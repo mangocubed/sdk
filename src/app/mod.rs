@@ -9,8 +9,8 @@ use http::{HeaderName, HeaderValue};
 use serde::{Deserialize, Serialize};
 use validator::ValidationErrors;
 
-#[cfg(all(feature = "auth-client", feature = "server"))]
-use crate::core::config::AUTH_CLIENT_CONFIG;
+#[cfg(all(feature = "identity-client", feature = "server"))]
+use crate::core::config::IDENTITY_CLIENT_CONFIG;
 
 pub mod components;
 pub mod hooks;
@@ -132,26 +132,26 @@ pub fn spinner_is_active() -> bool {
     SPINNER_UNITS.read().values().any(|&loading| loading)
 }
 
-#[cfg(feature = "auth-client")]
-pub fn auth_client_provider_app_url() -> url::Url {
+#[cfg(feature = "identity-client")]
+pub fn identity_provider_app_url() -> url::Url {
     #[cfg(feature = "server")]
-    return AUTH_CLIENT_CONFIG.provider_app_url();
+    return IDENTITY_CLIENT_CONFIG.provider_app_url();
 
     #[cfg(not(feature = "server"))]
-    env!("AUTH_CLIENT_PROVIDER_APP_URL")
+    env!("IDENTITY_CLIENT_PROVIDER_APP_URL")
         .parse()
-        .expect("Could not parse Auth client provider app URL")
+        .expect("Could not parse Identity client provider app URL")
 }
 
-#[cfg(feature = "auth-client")]
-pub fn auth_client_authorize_url() -> url::Url {
-    let mut url = auth_client_provider_app_url().join("authorize").unwrap();
+#[cfg(feature = "identity-client")]
+pub fn identity_authorize_url() -> url::Url {
+    let mut url = identity_provider_app_url().join("authorize").unwrap();
 
     #[cfg(feature = "server")]
-    url.set_query(Some(&format!("client_id={}", AUTH_CLIENT_CONFIG.id())));
+    url.set_query(Some(&format!("client_id={}", IDENTITY_CLIENT_CONFIG.id())));
 
     #[cfg(not(feature = "server"))]
-    url.set_query(Some(&format!("client_id={}", env!("AUTH_CLIENT_ID"))));
+    url.set_query(Some(&format!("client_id={}", env!("IDENTITY_CLIENT_ID"))));
 
     url
 }
