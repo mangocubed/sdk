@@ -10,7 +10,7 @@ use http::StatusCode;
 #[cfg(feature = "core")]
 use validator::ValidationError;
 
-pub const COPYRIGHT: &str = "© 2025 Mango³ Group";
+pub const COPYRIGHT: &str = "© 2026 Mango³ Group";
 pub const PRIVACY_URL: &str = "https://mango3.app/privacy";
 pub const TERMS_URL: &str = "https://mango3.app/terms";
 
