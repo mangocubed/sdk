@@ -230,6 +230,38 @@ pub fn TextField(
 }
 
 #[component]
+pub fn TextareaField(
+    #[props(into, optional)] disabled: Signal<bool>,
+    id: String,
+    label: String,
+    #[props(default = 256)] max_length: u16,
+    name: String,
+    #[props(into, optional)] readonly: Signal<bool>,
+    #[props(into, optional)] value: Signal<String>,
+) -> Element {
+    let error = use_field_error_message(id.clone());
+
+    rsx! {
+        FormField { disabled, error, label,
+            textarea {
+                class: "textarea",
+                class: if error().is_some() { "textarea-error" },
+                disabled,
+                id,
+                maxlength: max_length,
+                name,
+                onkeydown: on_keydown,
+                oninput: move |event| {
+                    *value.write() = event.value();
+                },
+                readonly,
+                value,
+            }
+        }
+    }
+}
+
+#[component]
 pub fn ToggleField(
     #[props(into, optional)] disabled: Signal<bool>,
     id: String,

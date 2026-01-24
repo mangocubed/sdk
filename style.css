@@ -47,6 +47,7 @@
 @source inline("spinner");
 @source inline("splash");
 @source inline("text-error");
+@source inline("textarea{-error,}");
 @source inline("w-full");
 
 /* Utilities */
