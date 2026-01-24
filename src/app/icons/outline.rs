@@ -350,6 +350,25 @@ pub fn PencilOutline(#[props(default = "size-6".to_owned())] class: String) -> E
 }
 
 #[component]
+pub fn PlusOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
+    rsx! {
+        svg {
+            class,
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            view_box: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            path {
+                d: "M12 4.5v15m7.5-7.5h-15",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+            }
+        }
+    }
+}
+
+#[component]
 pub fn TrashOutline(#[props(default = "size-6".to_owned())] class: String) -> Element {
     rsx! {
         svg {
